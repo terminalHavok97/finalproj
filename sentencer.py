@@ -29,6 +29,7 @@ class Sentencer:
         with open(fname) as f:
             words = f.readlines()
         words = [x.strip() for x in words]
+        f.close()
         return words
 
     #Get random index in a list
