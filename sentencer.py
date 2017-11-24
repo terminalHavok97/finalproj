@@ -13,7 +13,7 @@ class Sentencer:
 
     #Give the user a sentance
     #Assuming SUBJECT VERB ADJ NOUN structure
-    def giveSentence(self):
+    def getSentence(self):
         verb = self.verbs[self.randomWord(self.verbs)]
         adj  = self.adjs[self.randomWord(self.adjs)]
         while (True):
@@ -21,7 +21,7 @@ class Sentencer:
             noun2 = self.nouns[self.randomWord(self.nouns)]
             if noun1 != noun2:
                 break
-        result = noun1 + " " + verb + " " + adj + " " + noun2
+        result = [noun1, verb, adj, noun2]
         return result
 
     #Read in a specific word list
