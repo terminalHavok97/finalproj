@@ -3,7 +3,6 @@ class Sentencer:
         import random
     except ImportError:
         raise ImportError('<Sentencer import error>')
-
     global random
 
     #Read in word lists
@@ -25,11 +24,13 @@ class Sentencer:
         result = noun1 + " " + verb + " " + adj + " " + noun2
         return result
 
+    #Read in a specific word list
     def readWords(self, fname):
         with open(fname) as f:
             words = f.readlines()
         words = [x.strip() for x in words]
         return words
 
+    #Get random index in a list
     def randomWord(self, list):
         return random.randrange(0, (len(list) - 1), 1)

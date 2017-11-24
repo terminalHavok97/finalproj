@@ -4,4 +4,5 @@
 from sentencer import Sentencer
 
 sGen = Sentencer()
-print sGen.giveSentence()
+for i in range(1, 200):
+    print i, sGen.giveSentence()
