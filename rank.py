@@ -2,14 +2,27 @@ class Ranker:
     #Make the table, define the structure of a row
     #Row = id, rank, data(not sure if string or array)
     def __init__(self):
+        self.table = []
+        self.t_length = 0
 
     #Add a new sentance to the table
     def addToTable(self, data):
-        return -1
+        l = [self.t_length, 0, data]
+        self.table.append(l)
+        self.t_length += 1
 
     #Remove the sentence indexed id from the table
     def removeFromTable(self, id):
         return -1
+
+    #Print everything in the table
+    def printAll(self):
+        for i in self.table:
+            print i[0], i[1], i[2]
+
+        print ""
+        print "===================="
+        print "Total elems in table = ", self.t_length
 
     #Search table for data matching param data and return its id
     def getID(self, data):

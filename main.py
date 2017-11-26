@@ -2,15 +2,18 @@
 #Tom Vaughan - tv15461
 
 from sentence import Sentencer
+from rank import Ranker
+
 from audio import AudioPlayer
 import sys
 import os
 
 fname = "bin/tta.mp3"
 sGen = Sentencer()
-ap = AudioPlayer()
+ranker = Ranker()
 
-for i in range(1,10):
-    result = sGen.getSentenceString()
-    ap.textToAudio(result, fname)
-    ap.playSavedAudio(fname)
+for i in range(0,50):
+    s = sGen.getSentenceString()
+    ranker.addToTable(s)
+
+ranker.printAll()
