@@ -31,6 +31,7 @@ class Ranker:
         print ""
         print "===================="
         print "Total elems in table = ", self.t_length
+        print ""
 
     #Search table for data matching param data and return its id
     def getID(self, data):
@@ -52,11 +53,18 @@ class Ranker:
     def updateFromComparison(self, ID1, ID2):
         k = 20
 
-        ea1 = 1 / (1 + (10 ^ ((self.getRank(ID2) - self.getRank(ID1)) / 400)))
-        ea2 = 1 / (1 + (10 ^ ((self.getRank(ID1) - self.getRank(ID2)) / 400)))
+        qa = pow(10, self.getRank(ID1) / float(400))
+        qb = pow(10, self.getRank(ID2) / float(400))
 
-        #print "ea1 = ", ea1
-        #print "ea2 = ", ea2
+        print "qa ", qa
+        print "qb ", qb
+
+        ea1 = qa / (qa + qb)
+        ea2 = qb / (qa + qb)
+
+        print "ea1 ", ea1
+        print "ea2 ", ea2
+        print "SUM: ", (ea1 + ea2)
 
         rank1 = self.getRank(ID1) + (k * (1 - ea1))
         rank2 = self.getRank(ID2) + (k * (-1 - ea2))
