@@ -4,7 +4,7 @@
 from sentencer import Sentencer
 from audio import AudioPlayer
 
-ap = AudioPlayer()
+ap = AudioPlayer().
 
 #sGen = Sentencer()
 

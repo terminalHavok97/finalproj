@@ -1,32 +1,16 @@
-'''
-from gtts import gTTS
-import os
-import vlc
-
-tts = gTTS(text='Hello fellow human how are you?', lang='en')
-tts.save("good.mp3")
-
-p = vlc.MediaPlayer("good.mp3")
-p.play()
-'''
 class AudioPlayer:
     try:
-        import pyaudio
         from gtts import gTTS
-        import wave
-        import sys
+        from pydub import AudioSegment
+        from pydub.playback import play
     except ImportError:
         raise ImportError('<AudioPlayer import error>')
-    global pyaudio, gTTS, wave, sys
+    global gTTS, AudioSegment, play
 
-    def __init__(self):
-        #self.pya = pyaudio.PyAudio()
-        print "Testing tts"
-        self.textToAudio("Hello I am working")
-
-    def textToAudio(self, t, speed=False):
+    def textToAudio(self, t, fname, speed=False):
         tts = gTTS(text=t, lang='en', slow=speed)
-        tts.save("bin/tta.wav")
+        tts.save(fname)
 
     def playSavedAudio(self, fname):
-        return -1
+        a = AudioSegment.from_mp3(fname)
+        play(a)
