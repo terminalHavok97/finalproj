@@ -7,7 +7,7 @@ class Ranker:
 
     #Add a new sentance to the table
     def addToTable(self, data):
-        l = [self.t_length, 0, data]
+        l = [self.t_length, 1000, data]
         self.table.append(l)
         self.t_length += 1
 
@@ -66,8 +66,3 @@ class Ranker:
 
         self.table[ID1][1] = rank1
         self.table[ID2][1] = rank2
-
-
-    #Update rank of sentance with param id
-    def __updateRank(self, ID):
-        return -1
