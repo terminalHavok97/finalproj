@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #Tom Vaughan - tv15461
 
-from sentencer import Sentencer
+from sentence import Sentencer
 from audio import AudioPlayer
 import sys
 import os
