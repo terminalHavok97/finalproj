@@ -47,9 +47,26 @@ class Ranker:
     def getRank(self, ID):
         return self.table[ID][1]
 
-    #Update the ranks of
-    def updateFromComparison(self, id1, id2):
-        return -1
+    #Update the ranks of ID1 and ID2 - ID1 is the victor
+    #1 point for win, 0 for loss
+    def updateFromComparison(self, ID1, ID2):
+        k = 20
+
+        ea1 = 1 / (1 + (10 ^ ((self.getRank(ID2) - self.getRank(ID1)) / 400)))
+        ea2 = 1 / (1 + (10 ^ ((self.getRank(ID1) - self.getRank(ID2)) / 400)))
+
+        #print "ea1 = ", ea1
+        #print "ea2 = ", ea2
+
+        rank1 = self.getRank(ID1) + (k * (1 - ea1))
+        rank2 = self.getRank(ID2) + (k * (-1 - ea2))
+
+        #print "rank1 = ", rank1
+        #print "rank2 = ", rank2
+
+        self.table[ID1][1] = rank1
+        self.table[ID2][1] = rank2
+
 
     #Update rank of sentance with param id
     def __updateRank(self, ID):
