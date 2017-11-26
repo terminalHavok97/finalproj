@@ -34,11 +34,14 @@ class Ranker:
 
     #Search table for data matching param data and return its id
     def getID(self, data):
+        for i in self.table:
+            if i[2] == data:
+                return i[0]
+        print "Error - Data not found"
         return -1
-
     #Search table for id matching param id and return its data
     def getData(self, ID):
-        return -1
+        return self.table[ID][2]
 
     #Search table for id matching param id and return its rank
     def getRank(self, ID):

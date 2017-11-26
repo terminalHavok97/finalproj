@@ -17,7 +17,3 @@ for i in range(0,10):
     ranker.addToTable(s)
 
 ranker.printAll()
-
-ranker.removeFromTable(3)
-print ""
-ranker.printAll()
