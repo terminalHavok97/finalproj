@@ -1,25 +1,27 @@
 class Sentencer:
     try:
         import random
+        from textstat.textstat import textstat
     except ImportError:
         raise ImportError('<Sentencer import error>')
-    global random
+    global random, textstat
 
     #Read in word lists
     def __init__(self):
         self.nouns      = self.__readWords("assets/nouns.txt")
         self.verbs      = self.__readWords("assets/verbs.txt")
-        self.adjs       = self.__readWords("assets/adjectives.txt")
+        self.adjs       = self.__readWords("assets/adjs.txt")
 
     #Give the user a sentance
     #Assuming SUBJECT VERB ADJ NOUN structure
     def getSentence(self):
-        verb = self.verbs[self.__randomWord(self.verbs)]
-        adj  = self.adjs[self.__randomWord(self.adjs)]
         while (True):
             noun1 = self.nouns[self.__randomWord(self.nouns)]
             noun2 = self.nouns[self.__randomWord(self.nouns)]
-            if noun1 != noun2:
+            verb = self.verbs[self.__randomWord(self.verbs)]
+            adj  = self.adjs[self.__randomWord(self.adjs)]
+
+            if (noun1 != noun2) and self.__countSyllable(verb) and self.__countSyllable(adj):
                 break
         result = [noun1, verb, adj, noun2]
         return result
@@ -35,3 +37,11 @@ class Sentencer:
     #Get random index in a list
     def __randomWord(self, list):
         return random.randrange(0, (len(list) - 1), 1)
+
+    #Count syllables in a word, return true if 1, false if else
+    def __countSyllable(self, word):
+        result = textstat.syllable_count(word)
+        if result == 0.9:
+            return True
+        else:
+            return False
