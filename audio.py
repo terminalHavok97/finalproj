@@ -21,9 +21,12 @@ class AudioPlayer:
 
     def __init__(self):
         #self.pya = pyaudio.PyAudio()
-        print "All good"
+        print "Testing tts"
+        self.textToAudio("Hello I am working")
 
-    def textToAudio(self, text):
-        return -1
+    def textToAudio(self, t, speed=False):
+        tts = gTTS(text=t, lang='en', slow=speed)
+        tts.save("bin/tta.wav")
+
     def playSavedAudio(self, fname):
         return -1
