@@ -12,8 +12,12 @@ fname = "bin/tta.mp3"
 sGen = Sentencer()
 ranker = Ranker()
 
-for i in range(0,50):
+for i in range(0,10):
     s = sGen.getSentenceString()
     ranker.addToTable(s)
 
+ranker.printAll()
+
+ranker.removeFromTable(3)
+print ""
 ranker.printAll()

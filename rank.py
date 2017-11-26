@@ -12,8 +12,16 @@ class Ranker:
         self.t_length += 1
 
     #Remove the sentence indexed id from the table
-    def removeFromTable(self, id):
-        return -1
+    def removeFromTable(self, ID):
+        if ID > self.t_length or ID < 0:
+            print "Error - ID out of bounds of table"
+            return -1
+        del self.table[ID]
+        self.t_length -= 1
+        for i in self.table:
+            if i[0] > ID:
+                i[0] -= 1
+
 
     #Print everything in the table
     def printAll(self):
@@ -29,11 +37,11 @@ class Ranker:
         return -1
 
     #Search table for id matching param id and return its data
-    def getData(self, id):
+    def getData(self, ID):
         return -1
 
     #Search table for id matching param id and return its rank
-    def getRank(self, id):
+    def getRank(self, ID):
         return -1
 
     #Update the ranks of
@@ -41,5 +49,5 @@ class Ranker:
         return -1
 
     #Update rank of sentance with param id
-    def __updateRank(self, id):
+    def __updateRank(self, ID):
         return -1
