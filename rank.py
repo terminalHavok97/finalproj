@@ -67,8 +67,8 @@ class Ranker:
         print "ea2 ", ea2
         print "SUM: ", (ea1 + ea2)
 
-        rank1 = self.getRank(ID1) + (__getKValue(ID1) * (1 - ea1))
-        rank2 = self.getRank(ID2) + (__getKValue(ID2) * (0 - ea2))
+        rank1 = self.getRank(ID1) + (self.__getKValue(ID1) * (1 - ea1))
+        rank2 = self.getRank(ID2) + (self.__getKValue(ID2) * (0 - ea2))
 
         self.table[ID1][1] = rank1
         self.table[ID2][1] = rank2
