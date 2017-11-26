@@ -10,7 +10,18 @@ class Experiment
     global threading, Sentencer, Ranker, AudioPlayer, time
 
     #Make table of sentances, initialise everything
-    def __init__(self):
+    def __init__(self, number):
+        #Inits
+        self.fname = "bin/tta.mp3"
+        self.sGen = Sentencer()
+        self.ranker = Ranker()
+        self.ap = AudioPlayer()
+
+        #Gen arg number of sentences
+        for i in range(0, number):
+            sen = self.sGen.getSentenceString()
+            self.ranker.addToTable(sen)
+
         self.start()
 
     #Start experiment, play audio of each pair of sentances and choose which is
@@ -20,4 +31,4 @@ class Experiment
     #Stop experiment
     def stop():
 
-    def display():
+    def __display():
