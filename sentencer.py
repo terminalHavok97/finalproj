@@ -12,9 +12,19 @@ class Sentencer:
         self.verbs      = self.__readWords("assets/verbs.txt")
         self.adjs       = self.__readWords("assets/adjs.txt")
 
+    #Return the result of __getSentence as an array
+    def getSentenceArray(self):
+        return self.__getSentence()
+
+    #Return the result of __getSentence as a string
+    def getSentenceString(self):
+        array = self.__getSentence()
+        string = array[0] + " " + array[1] + " " + array[2] + " " + array[3]
+        return string
+
     #Give the user a sentance
     #Assuming SUBJECT VERB ADJ NOUN structure
-    def getSentence(self):
+    def __getSentence(self):
         while (True):
             noun1 = self.nouns[self.__randomWord(self.nouns)]
             noun2 = self.nouns[self.__randomWord(self.nouns)]

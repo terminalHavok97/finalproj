@@ -3,11 +3,18 @@
 
 from sentencer import Sentencer
 from audio import AudioPlayer
+import sys
+import os
 
-ap = AudioPlayer().
+fname = "bin/tta.mp3"
 
-#sGen = Sentencer()
+#ap = AudioPlayer()
+#ap.textToAudio("Oi Oi Savaloy", fname)
+#ap.playSavedAudio(fname)
 
-#for i in range(1,100):
-#    result = sGen.getSentence()
-#    print result
+
+sGen = Sentencer()
+
+for i in range(1,10):
+    result = sGen.getSentenceString()
+    print result
