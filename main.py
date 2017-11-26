@@ -2,7 +2,12 @@
 #Tom Vaughan - tv15461
 
 from sentencer import Sentencer
+from audio import AudioPlayer
 
-sGen = Sentencer()
-result = sGen.getSentence()
-print result
+ap = AudioPlayer()
+
+#sGen = Sentencer()
+
+#for i in range(1,100):
+#    result = sGen.getSentence()
+#    print result
