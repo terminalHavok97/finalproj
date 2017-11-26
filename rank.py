@@ -45,7 +45,7 @@ class Ranker:
 
     #Search table for id matching param id and return its rank
     def getRank(self, ID):
-        return -1
+        return self.table[ID][1]
 
     #Update the ranks of
     def updateFromComparison(self, id1, id2):
