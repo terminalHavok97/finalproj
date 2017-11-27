@@ -49,29 +49,27 @@ class Ranker:
         return self.table[ID][1]
 
     #Update the ranks of ID1 and ID2 - ID1 is the victor
-    #1 point for win, 0 for loss
-    def updateFromComparison(self, ID1, ID2):
+    #1 point for win, 0 for loss, 0.5 for draw(on timeout)
+    def updateFromComparison(self, ID1, ID2, draw=False):
         self.table[ID1][2] += 1
         self.table[ID2][2] += 1
 
         qa = pow(10, self.getRank(ID1) / float(400))
         qb = pow(10, self.getRank(ID2) / float(400))
 
-        print "qa ", qa
-        print "qb ", qb
-
         ea1 = qa / (qa + qb)
         ea2 = qb / (qa + qb)
 
-        print "ea1 ", ea1
-        print "ea2 ", ea2
-        print "SUM: ", (ea1 + ea2)
-
-        rank1 = self.getRank(ID1) + (self.__getKValue(ID1) * (1 - ea1))
-        rank2 = self.getRank(ID2) + (self.__getKValue(ID2) * (0 - ea2))
+        if draw == False:
+            rank1 = self.getRank(ID1) + (self.__getKValue(ID1) * (1 - ea1))
+            rank2 = self.getRank(ID2) + (self.__getKValue(ID2) * (0 - ea2))
+        else:
+            rank1 = self.getRank(ID1) + (self.__getKValue(ID1) * (0.5 - ea1))
+            rank2 = self.getRank(ID2) + (self.__getKValue(ID2) * (0.5 - ea2))
 
         self.table[ID1][1] = rank1
         self.table[ID2][1] = rank2
+
 
     #Return a k-value appropriate for the rank of the sentance
     #Using the FIDE ranges (world chess federation)
