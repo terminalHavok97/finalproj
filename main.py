@@ -5,7 +5,14 @@ from experiment import Experiment
 
 from rank import Ranker
 
+
+#TODO Test
 ranker = Ranker()
+sGen = Sentencer()
+
+for i in range(0, 10):
+    sen = sGen.getSentenceString()
+    ranker.addToTable(sen)
 
 
 #exp = Experiment()

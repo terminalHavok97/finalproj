@@ -94,7 +94,6 @@ class Ranker:
     def find2LeastPlayed(self):
         low_bound = float("inf")
         lows = []
-        lowest = None
         l1 = None
         l2 = None
         #Find list of joint-lowest comparisons
@@ -114,18 +113,28 @@ class Ranker:
             l2 = lows[k]
         elif len == 1:
             l1 = lows[0]
-            #TODO Find next lowest value
+            del lows[:]
+            low_bound = float("inf")
+            for i in self.table:
+                if i[2] != l1[2] and i[2] < low_bound
+                    low_bound = i[2]
+                    del lows[:]
+                    lows.append(i)
+                elif i[2] != li[2] and i[2] = low_bound
+                    lows.append(i)
+            if len(lows) > 1:
+                i = random.randrange(0, (len(lows) - 1), 1)
+                l2 = lows[i]
+            elif len == 1:
+                l2 = lows[0]
+            else:
+                print "Error - Non 2nd least played row"
+                return -1
         else:
             print "Error - No least played rows"
             return -1
 
-
-        print ""
-        print l1
-        print l2
-        print ""
-
-
-            ##TODO delete 1st lowest from lows and add 2nd, then return both
-
-            ##ALSO TODO do for elif where there aren't 2 lowest
+        result = []
+        result.append(l1[0])
+        result.append(l2[0])
+        return result
