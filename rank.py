@@ -108,8 +108,24 @@ class Ranker:
 
         if len(lows) > 1:
             j = random.randrange(0, (len(lows) - 1), 1)
-            lowest = lows[j]
-            l1 = lowest
+            l1 = lows[j]
+            del lows[j]
+            k = random.randrange(0, (len(lows) - 1), 1)
+            l2 = lows[k]
+        elif len == 1:
+            l1 = lows[0]
+            #TODO Find next lowest value
+        else:
+            print "Error - No least played rows"
+            return -1
+
+
+        print ""
+        print l1
+        print l2
+        print ""
+
+
             ##TODO delete 1st lowest from lows and add 2nd, then return both
 
             ##ALSO TODO do for elif where there aren't 2 lowest

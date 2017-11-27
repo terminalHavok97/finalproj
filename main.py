@@ -3,7 +3,12 @@
 
 from experiment import Experiment
 
-exp = Experiment()
+from rank import Ranker
+
+ranker = Ranker()
+
+
+#exp = Experiment()
 
 #TODO Get cmd arguments in?
 #TODO Work out how sample sizes and multiple participants will work
