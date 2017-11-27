@@ -46,7 +46,7 @@ class Sentencer:
 
     #Get random index in a list
     def __randomWord(self, list):
-        return random.randrange(0, (len(list) - 1), 1)
+        return random.randrange(0, len(list), 1)
 
     #Count syllables in a word, return true if 1, false if else
     def __countSyllable(self, word):

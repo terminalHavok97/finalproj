@@ -12,7 +12,7 @@ class Ranker:
 
     #Add a new sentance to the table
     def addToTable(self, data):
-        l = [self.t_length, 1000, 0, data]
+        l = [self.t_length, 1000.0, 0, data]
         self.table.append(l)
         self.t_length += 1
 
@@ -106,24 +106,25 @@ class Ranker:
                 lows.append(i)
 
         if len(lows) > 1:
-            j = random.randrange(0, (len(lows) - 1), 1)
+            print "DEBUG: ", lows
+            j = random.randrange(0, len(lows), 1)
             l1 = lows[j]
             del lows[j]
-            k = random.randrange(0, (len(lows) - 1), 1)
+            k = random.randrange(0, len(lows), 1)
             l2 = lows[k]
         elif len == 1:
             l1 = lows[0]
             del lows[:]
             low_bound = float("inf")
             for i in self.table:
-                if i[2] != l1[2] and i[2] < low_bound
+                if i[2] != l1[2] and i[2] < low_bound:
                     low_bound = i[2]
                     del lows[:]
                     lows.append(i)
-                elif i[2] != li[2] and i[2] = low_bound
+                elif i[2] != li[2] and i[2] == low_bound:
                     lows.append(i)
             if len(lows) > 1:
-                i = random.randrange(0, (len(lows) - 1), 1)
+                i = random.randrange(0, len(lows), 1)
                 l2 = lows[i]
             elif len == 1:
                 l2 = lows[0]
