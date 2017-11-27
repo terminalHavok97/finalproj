@@ -73,12 +73,10 @@ class Experiment:
         print "Decide which one sounds MORE normal than the other"
         print "You have 5 seconds to decide"
         print ""
-
         self.ap.textToAudio(data1, self.fname1)
         self.ap.textToAudio(data2, self.fname2)
         self.ap.playSavedAudio(self.fname1)
         self.ap.playSavedAudio(self.fname2)
-
         print "Press 'a' for option 1"
         print "Press 'd' for option 2"
         q_start = time.time()
@@ -105,11 +103,3 @@ class Experiment:
     def __clear(self):
         clear = lambda: os.system('clear')
         clear()
-
-    # Disable printing
-    def __blockPrint(self):
-        sys.stdout = open(os.devnull, 'w')
-
-    # Restore printing
-    def __enablePrint(self):
-        sys.stdout = sys.__stdout__
