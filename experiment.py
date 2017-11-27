@@ -11,12 +11,16 @@ class Experiment:
     global threading, Sentencer, Ranker, AudioPlayer, time
 
     #Make table of sentances, initialise everything
-    def __init__(self, n=10, t=5):
+    #@n is number of sentances to create
+    #@t is timeout per question
+    #@i is the number of comparison tests to run
+    def __init__(self, n=10, t=5, i=20):
         #Inits
         self.fname1 = "bin/tta1.mp3"
         self.fname2 = "bin/tta2.mp3"
         self.q_time = t
         self.number = n
+        self.itr = i
         self.sGen = Sentencer()
         self.ranker = Ranker()
         self.ap = AudioPlayer()
@@ -35,10 +39,14 @@ class Experiment:
 
         #Set exp going
         runtime_start = time.time()
-        for i in range(0, self.itr):
-            data1 = ranker.getData(i)
-
+        for j in range(0, self.itr):
+            #Decide which 2 sentances have been played least and pick them
+            data = ranker.find2LeastPlayed()
+            data1 = ranker.getData(data[0])
+            data2 = ranker.getData(data[1])
+            #Run choice between 2 sentances
             result = run(data1, data2)
+            print "EXP: ", j, " = ", result
 
         runtime_end = time.time()
         runtime = runtime_end - runtime_start
@@ -65,19 +73,6 @@ class Experiment:
             else:
                 return 2
         return 0
-
-
-
-        #For each pairwise comparison
-        for i in range(0, itr):
-            self.__clear()
-            print "Press 'a' for option 1"
-            print "Press 'd' for option 2"
-            q_start = time.time()
-            while time.time() < q_start + self.q_time:
-                result = raw_input()
-                if result == 'a':
-                    ranker.updateFromComparison()
 
     def __display():
         return -1
