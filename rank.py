@@ -1,4 +1,9 @@
 class Ranker:
+    try:
+        import random
+    except ImportError:
+        raise ImportError('<Ranker import error>')
+    global random
     #Make the table, define the structure of a row
     #Row = id, rank, comparisons, data(not sure if string or array)
     def __init__(self):
@@ -44,6 +49,10 @@ class Ranker:
     def getData(self, ID):
         return self.table[ID][3]
 
+    #Search table for id matching param id and return its comparions
+    def getComp(self, ID):
+        return self.table[ID][2]
+
     #Search table for id matching param id and return its rank
     def getRank(self, ID):
         return self.table[ID][1]
@@ -80,3 +89,27 @@ class Ranker:
             return 20
         else:
             return 10
+
+    #Returns the 2 least played sentances
+    def find2LeastPlayed(self):
+        low_bound = float("inf")
+        lows = []
+        lowest = None
+        l1 = None
+        l2 = None
+        #Find list of joint-lowest comparisons
+        for i in self.table:
+            if i[2] < low_bound:
+                low_bound = i[2]
+                del lows[:]
+                lows.append(i)
+            elif i[2] == low_bound:
+                lows.append(i)
+
+        if len(lows) > 1:
+            j = random.randrange(0, (len(lows) - 1), 1)
+            lowest = lows[j]
+            l1 = lowest
+            ##TODO delete 1st lowest from lows and add 2nd, then return both
+
+            ##ALSO TODO do for elif where there aren't 2 lowest
