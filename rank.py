@@ -106,7 +106,6 @@ class Ranker:
                 lows.append(i)
 
         if len(lows) > 1:
-            print "DEBUG: ", lows
             j = random.randrange(0, len(lows), 1)
             l1 = lows[j]
             del lows[j]

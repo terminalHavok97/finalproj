@@ -1,10 +1,10 @@
 #!/usr/bin/python
 #Tom Vaughan - tv15461
 
-#from experiment import Experiment
+from experiment import Experiment
 
 #from rank import Ranker
-from sentence import Sentencer
+#from sentence import Sentencer
 
 '''
 #TODO Test

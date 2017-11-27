@@ -8,7 +8,7 @@ class Experiment:
         import os
     except ImportError:
         raise ImportError('<Experiment import error>')
-    global threading, Sentencer, Ranker, AudioPlayer, time
+    global threading, Sentencer, Ranker, AudioPlayer, time, os
 
     #Make table of sentances, initialise everything
     #@n is number of sentances to create
@@ -31,38 +31,34 @@ class Experiment:
             self.ranker.addToTable(sen)
 
         #Set exp going
-        total_start = time.time()
-        self.start(10)
-        total_end = time.time()
-        total_time = total_start - total_end
-        print total_time
-
-        #Set exp going
         runtime_start = time.time()
         for j in range(0, self.itr):
             #Decide which 2 sentances have been played least and pick them
-            data = ranker.find2LeastPlayed()
-            data1 = ranker.getData(data[0])
-            data2 = ranker.getData(data[1])
+            data = self.ranker.find2LeastPlayed()
+            data1 = self.ranker.getData(data[0])
+            data2 = self.ranker.getData(data[1])
             #Run choice between 2 sentances
-            result = run(data1, data2)
+            result = self.run(data1, data2)
             print "EXP: ", j, " = ", result
 
         runtime_end = time.time()
         runtime = runtime_end - runtime_start
+        print ""
         print "Runtime: ", runtime
 
+        ranker.printAll()
 
     #Play a single comparison of the experiment
     def run(self, data1, data2):
         self.__clear()
         print "Please listen to both sentances"
         print "Decide which one sounds MORE normal than the other"
+        print "You have 5 seconds to decide"
         print ""
-        au.textToAudio(data1, self.fname1)
-        au.textToAudio(data2, self.fname2)
-        au.playSavedAudio(self.fname1)
-        au.playSavedAudio(self.fname2)
+        self.ap.textToAudio(data1, self.fname1)
+        self.ap.textToAudio(data2, self.fname2)
+        self.ap.playSavedAudio(self.fname1)
+        self.ap.playSavedAudio(self.fname2)
         print "Press 'a' for option 1"
         print "Press 'd' for option 2"
         q_start = time.time()
@@ -72,6 +68,7 @@ class Experiment:
                 return 1
             else:
                 return 2
+        print "TIMEOUT! Next question"
         return 0
 
     def __display():
@@ -79,5 +76,5 @@ class Experiment:
 
     #Clear console
     def __clear(self):
-        clear = lambda: os.system('cls')
+        clear = lambda: os.system('clear')
         clear()
