@@ -1,14 +1,16 @@
 class Experiment:
     try:
-        import threading
         from sentence import Sentencer
         from rank import Ranker
         from audio import AudioPlayer
         import time
         import os
+        import sys
+        import thread
+        import threading
     except ImportError:
         raise ImportError('<Experiment import error>')
-    global threading, Sentencer, Ranker, AudioPlayer, time, os
+    global Sentencer, Ranker, AudioPlayer, time, os, sys, thread, threading
 
     #Make table of sentances, initialise everything
     #@n is number of sentances to create
@@ -39,7 +41,11 @@ class Experiment:
             data2 = self.ranker.getData(data[1])
             #Run choice between 2 sentances
             result = self.run(data1, data2)
-            print "EXP: ", j, " = ", result
+
+            if result == 1:
+                self.ranker.updateFromComparison(data1, data2)
+            elif result == 2:
+                self.ranker.updateFromComparison(data2, data1)
 
         runtime_end = time.time()
         runtime = runtime_end - runtime_start
@@ -48,6 +54,18 @@ class Experiment:
 
         ranker.printAll()
 
+    def __raw_input_with_timeout(self, timeout):
+        timer = threading.Timer(timeout, thread.interrupt_main)
+        result = -1
+        try:
+            timer.start()
+            result = raw_input()
+        except KeyboardInterrupt:
+            pass
+        timer.cancel()
+        return result
+
+
     #Play a single comparison of the experiment
     def run(self, data1, data2):
         self.__clear()
@@ -55,21 +73,30 @@ class Experiment:
         print "Decide which one sounds MORE normal than the other"
         print "You have 5 seconds to decide"
         print ""
+
         self.ap.textToAudio(data1, self.fname1)
         self.ap.textToAudio(data2, self.fname2)
         self.ap.playSavedAudio(self.fname1)
         self.ap.playSavedAudio(self.fname2)
+
         print "Press 'a' for option 1"
         print "Press 'd' for option 2"
         q_start = time.time()
-        while time.time() < q_start + self.q_time:
-            result = raw_input()
-            if result == 'a':
-                return 1
-            else:
-                return 2
-        print "TIMEOUT! Next question"
-        return 0
+
+        result = self.__raw_input_with_timeout(self.q_time)
+
+        if result == 'a':
+            return 1
+        elif result == 'd':
+            return 2
+        elif result == -1:
+            print "TIMEOUT! Next question"
+            raw_input("Press Enter to continue...")
+            return 0
+        else:
+            print "Error - Incorrect selection"
+            raw_input("Press Enter to continue...")
+            return 0
 
     def __display():
         return -1
@@ -78,3 +105,11 @@ class Experiment:
     def __clear(self):
         clear = lambda: os.system('clear')
         clear()
+
+    # Disable printing
+    def __blockPrint(self):
+        sys.stdout = open(os.devnull, 'w')
+
+    # Restore printing
+    def __enablePrint(self):
+        sys.stdout = sys.__stdout__
