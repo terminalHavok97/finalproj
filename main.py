@@ -9,4 +9,7 @@ import threading as t
 import sys
 import os
 
-exp = Experiment(50)
+exp = Experiment()
+
+#TODO Get cmd arguments in?
+#TODO Work out how sample sizes and multiple participants will work

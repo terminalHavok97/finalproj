@@ -11,9 +11,11 @@ class Experiment
     global threading, Sentencer, Ranker, AudioPlayer, time
 
     #Make table of sentances, initialise everything
-    def __init__(self, number):
+    def __init__(self):
         #Inits
         self.fname = "bin/tta.mp3"
+        self.q_time = 5
+        self.itr = 10
         self.sGen = Sentencer()
         self.ranker = Ranker()
         self.ap = AudioPlayer()
@@ -24,19 +26,25 @@ class Experiment
             self.ranker.addToTable(sen)
 
         #Set exp going
-        t_start = time.time()
+        total_start = time.time()
         self.start(10)
-        t_end = time.time()
+        total_end = time.time()
+        total_time = total_start - total_end
 
     #Start experiment, play audio of each pair of sentances and choose which is
     #more normal
     def start(self, itr):
         #For each pairwise comparison
         for i in range(0, itr):
-            __clear()
+            self.__clear()
             print "Press 'a' for option 1"
             print "Press 'd' for option 2"
-            result = raw_input()
+            q_start = time.time()
+            while time.time() < q_start + self.q_time:
+                result = raw_input()
+                if result == 'a':
+                    ranker.updateFromComparison()
+
 
     #Stop experiment
     def stop():
