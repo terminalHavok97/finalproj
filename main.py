@@ -24,7 +24,7 @@ for i in range(0, 20):
 '''
 
 
-exp = Experiment()
+exp = Experiment(3, 5, 10)
 
 #TODO Get cmd arguments in????
 #TODO Work out how sample sizes and multiple participants will work

@@ -111,7 +111,7 @@ class Ranker:
             del lows[j]
             k = random.randrange(0, len(lows), 1)
             l2 = lows[k]
-        elif len == 1:
+        elif len(lows) == 1:
             l1 = lows[0]
             del lows[:]
             low_bound = float("inf")
@@ -120,7 +120,7 @@ class Ranker:
                     low_bound = i[2]
                     del lows[:]
                     lows.append(i)
-                elif i[2] != li[2] and i[2] == low_bound:
+                elif i[2] != l1[2] and i[2] == low_bound:
                     lows.append(i)
             if len(lows) > 1:
                 i = random.randrange(0, len(lows), 1)

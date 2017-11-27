@@ -18,8 +18,8 @@ class Experiment:
     #@i is the number of comparison tests to run
     def __init__(self, n=10, t=5, i=20):
         #Inits
-        self.fname1 = "bin/tta1.mp3"
-        self.fname2 = "bin/tta2.mp3"
+        self.fname1 = 'bin/tta1.mp3'
+        self.fname2 = 'bin/tta2.mp3'
         self.q_time = t
         self.number = n
         self.itr = i
@@ -43,16 +43,16 @@ class Experiment:
             result = self.run(data1, data2)
 
             if result == 1:
-                self.ranker.updateFromComparison(data1, data2)
+                self.ranker.updateFromComparison(data[0], data[1])
             elif result == 2:
-                self.ranker.updateFromComparison(data2, data1)
+                self.ranker.updateFromComparison(data[1], data[0])
 
         runtime_end = time.time()
         runtime = runtime_end - runtime_start
         print ""
         print "Runtime: ", runtime
 
-        ranker.printAll()
+        self.ranker.printAll()
 
     def __raw_input_with_timeout(self, timeout):
         timer = threading.Timer(timeout, thread.interrupt_main)
@@ -76,6 +76,7 @@ class Experiment:
         self.ap.textToAudio(data1, self.fname1)
         self.ap.textToAudio(data2, self.fname2)
         self.ap.playSavedAudio(self.fname1)
+        time.sleep(2)
         self.ap.playSavedAudio(self.fname2)
         print "Press 'a' for option 1"
         print "Press 'd' for option 2"
