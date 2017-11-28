@@ -41,7 +41,7 @@ class Experiment:
             data2 = self.ranker.getData(data[1])
             #Run choice between 2 sentances
             result = self.run(data1, data2)
-
+            time.sleep(1) #Just to ensure audio isn't skipped through too fast
             if result == 1:
                 self.ranker.updateFromComparison(data[0], data[1])
             elif result == 2:
@@ -76,7 +76,7 @@ class Experiment:
         self.ap.textToAudio(data1, self.fname1)
         self.ap.textToAudio(data2, self.fname2)
         self.ap.playSavedAudio(self.fname1)
-        time.sleep(2)
+        time.sleep(2) #So audio doesn't overlap
         self.ap.playSavedAudio(self.fname2)
         print "Press 'a' for option 1"
         print "Press 'd' for option 2"
