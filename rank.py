@@ -83,12 +83,17 @@ class Ranker:
     #Return a k-value appropriate for the rank of the sentance
     #Using the FIDE ranges (world chess federation)
     def __getKValue(self, ID):
+        #Actually, just going to use a flat value of k = 32 for now
+        #Might change later, who knows
+        return 32
+        '''
         if (self.table[ID][2] < 30 and self.table[ID] < 2300):
             return 40
         elif(self.table[ID][1] < 2400):
             return 20
         else:
             return 10
+        '''
 
     #Returns the 2 least played sentances
     def find2LeastPlayed(self):
