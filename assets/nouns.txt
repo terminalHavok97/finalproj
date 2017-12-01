@@ -1,6 +1,5 @@
 man
 dog
-woman
 cat
 fish
 bike
