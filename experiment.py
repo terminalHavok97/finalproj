@@ -3,14 +3,16 @@ class Experiment:
         from sentence import Sentencer
         from rank import Ranker
         from audio import AudioPlayer
+        from gui import GUI
         import time
         import os
         import sys
         import thread
         import threading
+        import Tkinter as tk
     except ImportError:
         raise ImportError('<Experiment import error>')
-    global Sentencer, Ranker, AudioPlayer, time, os, sys, thread, threading
+    global Sentencer, Ranker, AudioPlayer, GUI, time, os, sys, thread, threading, tk
 
     #Make table of sentances, initialise everything
     #@n is number of sentances to create
@@ -26,7 +28,18 @@ class Experiment:
         self.sGen = Sentencer()
         self.ranker = Ranker()
         self.ap = AudioPlayer()
+        self.gui = GUI()
 
+        root = tk.Tk()
+        self.gui.setupWindow(root)
+        self.gui.updateText(root, "Hello")
+        time.sleep(1)
+        self.gui.updateText(root, "Hello")
+        root.mainloop()
+
+
+
+        '''
         #Gen arg number of sentences
         for i in range(0, self.number):
             sen = self.sGen.getSentenceString()
@@ -53,7 +66,9 @@ class Experiment:
         print "Runtime: ", runtime
 
         self.ranker.printAll()
+        '''
 
+    #Get choice from user
     def __raw_input_with_timeout(self, timeout):
         timer = threading.Timer(timeout, thread.interrupt_main)
         result = -1
@@ -96,9 +111,6 @@ class Experiment:
             print "Error - Incorrect selection"
             raw_input("Press Enter to continue...")
             return 0
-
-    def __display():
-        return -1
 
     #Clear console
     def __clear(self):

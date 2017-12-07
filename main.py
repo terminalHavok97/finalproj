@@ -2,13 +2,11 @@
 #Tom Vaughan - tv15461
 try:
     from experiment import Experiment
-    from gui import GUI
+    import time
 except ImportError:
     raise ImportError('<Main import error>')
 
-#exp = Experiment(3, 5, 10)
-gui = GUI()
-gui.display("Hello world")
+exp = Experiment(3, 5, 10)
 
 #TODO Work out how sample sizes and multiple participants will work
 #TODO Look at pruning out some bad sentences

@@ -1,13 +1,17 @@
 class GUI:
-    import Tkinter as tk
+    try:
+        import Tkinter as tk
+    except ImportError:
+        raise ImportError('<GUI import error>')
     global tk
-    def __init__(self):
-        w = tk.Tk()
-        w.attributes('-fullscreen', True)
-        w.config(background='white', cursor='none')
-        w.bind("w", lambda e: w.destroy())
-        w.mainloop()
 
-    def display(self, arg):
-        label = tk.Label(w, text="Hello")
-        label.pack()
+    def __init__(self):
+        self.textToSet = ""
+
+    def setupWindow(self, root):
+        root.attributes('-fullscreen', True)
+        root.config(background='white', cursor='none')
+        root.bind("<space>", lambda e: root.destroy())
+
+    def updateText(self, root, t):
+        tk.Label(root, text=t).pack()
