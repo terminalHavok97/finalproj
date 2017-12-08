@@ -30,16 +30,6 @@ class Experiment:
         self.ap = AudioPlayer()
         self.gui = GUI()
 
-        root = tk.Tk()
-        self.gui.setupWindow(root)
-        self.gui.updateText(root, "Hello")
-        time.sleep(1)
-        self.gui.updateText(root, "Hello")
-        root.mainloop()
-
-
-
-        '''
         #Gen arg number of sentences
         for i in range(0, self.number):
             sen = self.sGen.getSentenceString()
@@ -66,7 +56,6 @@ class Experiment:
         print "Runtime: ", runtime
 
         self.ranker.printAll()
-        '''
 
     #Get choice from user
     def __raw_input_with_timeout(self, timeout):
