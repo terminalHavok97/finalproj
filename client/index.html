@@ -1,9 +1,32 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <script></script>
-  </head>
-  <body>
-  </body>
+    <head>
+        <title>My experiment</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script src="jspsych-5.0.3/jspsych.js"></script>
+        <script src="jspsych-5.0.3/plugins/jspsych-text.js"></script>
+        <link href="jspsych-5.0.3/css/jspsych.css" rel="stylesheet" type="text/css"></link>
+    </head>
+    <body>
+    </body>
+    <script>
+
+    var welcome_block = {
+        type: "text",
+        text: "<h2>Welcome to the experiment. Press any key to continue</h2>"
+    }
+
+    var instructions_block = {
+      type: "text",
+      text: ""
+    }
+
+    var timeline = [];
+    timeline.push(welcome_block);
+
+    jsPsych.init({
+        timeline: timeline
+    })
+
+    </script>
 </html>

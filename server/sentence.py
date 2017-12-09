@@ -11,6 +11,7 @@ class Sentencer:
         self.nouns      = self.__readWords("assets/nouns.txt")
         self.verbs      = self.__readWords("assets/verbs.txt")
         self.adjs       = self.__readWords("assets/adjs.txt")
+        self.atten      = self.__rewadWords("assets/fish.txt")
 
     #Return the result of __getSentence as an array
     def getSentenceArray(self):
