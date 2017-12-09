@@ -79,9 +79,6 @@ class Ranker:
         self.table[ID1][1] = rank1
         self.table[ID2][1] = rank2
 
-
-    #Return a k-value appropriate for the rank of the sentance
-    #Using the FIDE ranges (world chess federation)
     def __getKValue(self, ID):
         #Actually, just going to use a flat value of k = 32 for now
         #Might change later, who knows

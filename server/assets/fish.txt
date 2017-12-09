@@ -1,0 +1,10 @@
+carp
+cod
+herring
+mackrel
+anchovy
+salmon
+tuna
+bream
+pike
+flounder
