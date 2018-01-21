@@ -20,3 +20,13 @@ exp = Experiment(3, 5, 10)
     # the server-side program
 #TODO JS psych - Could be an option for building the client stuff
 #TODO Make sure there's a "how many left" type thing on the client
+
+'''TODO
+    1. Start client process
+    2. Client contacts server, and asks for a set of matches
+        a. Server picks from sentances that its most interested in
+        b. Server determines matches, and sends those to client
+    3. Client recives a set of matches from the server, and runs them in experiment
+    4. Client records results of each match, sends those back to server when done
+        a. Server takes set of match results, and applies those to their respective
+        sentances, updating the rankings between them

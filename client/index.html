@@ -2,27 +2,57 @@
 <html>
     <head>
         <title>My experiment</title>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-        <script src="jspsych-5.0.3/jspsych.js"></script>
-        <script src="jspsych-5.0.3/plugins/jspsych-text.js"></script>
-        <link href="jspsych-5.0.3/css/jspsych.css" rel="stylesheet" type="text/css"></link>
+        <script src="jspsych-6.0.1/jspsych.js"></script>
+        <script src="jspsych-6.0.1/plugins/jspsych-html-keyboard-response.js"></script>
+        <link href="jspsych-6.0.1/css/jspsych.css" rel="stylesheet" type="text/css"></link>
     </head>
     <body>
     </body>
     <script>
 
+    var sentance_list = [
+      "cat",
+      "dog",
+      "blue",
+      "red"
+    ];
+
     var welcome_block = {
-        type: "text",
-        text: "<h2>Welcome to the experiment. Press any key to continue</h2>"
-    }
+        type: "html-keyboard-response",
+        stimulus: "<h1>Welcome to the experiment. Press any key to continue</h1>"
+    };
 
     var instructions_block = {
-      type: "text",
-      text: ""
-    }
+      type: "html-keyboard-response",
+      stimulus: "<p>In this experiment, two sentances will appear one after " +
+            "another in the center of the screen.</p><p>You will need to " +
+            "compare them, and choose which one sounds more <strong>" +
+            "normal</strong> in everyday speech.</p><p>If you think " +
+            "the first sentance is more normal, press the <strong>A" +
+            "</strong> button</p><p>If you think the second sentance is " +
+            "more normal, press the <strong>D</strong> button</p>" +
+            "<p>If the sentance contains the name of a <strong>fish</strong>" +
+            ", then press the <strong>F</strong> key</p>" +
+            "<p>You will only have 5 seconds to answer</p>" +
+            "<p>Press any key to being<p>"
+    };
+
+    /*var trial = {
+      type: 'button-response',
+      stimulus: "text",
+      choices: ['1', '2'],
+      prompt: "<p class='center-content'>Pick which sentance is more normal</p>"
+    };*/
+
+    var trial = {
+      type: 'html-keyboard-response',
+      stimulus: 'hello world'
+    };
 
     var timeline = [];
     timeline.push(welcome_block);
+    timeline.push(instructions_block);
+    timeline.push(trial);
 
     jsPsych.init({
         timeline: timeline
