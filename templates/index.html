@@ -8,6 +8,9 @@
   <script type=text/javascript>
       var ws;
       var sentences = [];
+      var timeline = [];
+
+      var cat = "cat";
 
       function onLoad() {
           ws = new WebSocket("ws://localhost:3000/websocket");
@@ -29,15 +32,30 @@
           type: "html-keyboard-response",
           stimulus: "<h1>Welcome to the experiment. Press any key to continue</h1>"
       };
+      timeline.push(welcome_block);
 
-      var test_block = {
-        type: "html-keyboard-response"
-        //TODO Fix this, find a way to access js vars in output
-        stimulus: sentences[0];
+      var instructions_block = {
+        type: "html-keyboard-response",
+        stimulus: "<p>In this experiment, two sentances will appear one after " +
+              "another in the center of the screen.</p><p>You will need to " +
+              "compare them, and choose which one sounds more <strong>" +
+              "normal</strong> in everyday speech.</p><p>If you think " +
+              "the first sentance is more normal, press the <strong>A" +
+              "</strong> button</p><p>If you think the second sentance is " +
+              "more normal, press the <strong>D</strong> button</p>" +
+              "<p>If the sentance contains the name of a <strong>fish</strong>" +
+              ", then press the <strong>F</strong> key</p>" +
+              "<p>You will only have 5 seconds to answer</p>" +
+              "<p>Press any key to being<p>"
       };
 
-      var timeline = [];
-      timeline.push(welcome_block);
+      var test_block = {
+        type: "html-keyboard-response",
+        stimulus: function() {
+          console.log("TEST: " + sentences[0]);
+          return "<p>GLUBGLUB</p>";
+        }
+      };
       timeline.push(test_block);
 
       jsPsych.init({
