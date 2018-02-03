@@ -103,7 +103,7 @@ class Ranker:
         self.table[ID2][2] = rank2
 
     #Returns the 2 least played sentances
-    def find2LeastPlayed(self):
+    def __find2LeastPlayed(self):
         low_bound = float("inf")
         lows = []
         l1 = None
@@ -148,3 +148,15 @@ class Ranker:
         result.append(l1[0])
         result.append(l2[0])
         return result
+
+    #Choose the n most interesting pairs
+    def pickPairs(self, n):
+        #Assign an interestingness score to each sentance
+        #Will then pick pairs which are (mostly) close to each other in this score
+        for i in self.table:
+            score = 0
+
+    def prune(self):
+        #After n plays, each sentance will be able to be pruned if in the
+        # bottom n % of the table
+        print "PRUNE"

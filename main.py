@@ -12,6 +12,8 @@
     # the server-side program
 #TODO JS psych - Could be an option for building the client stuff
 #TODO Make sure there's a "how many left" type thing on the client
+#TODO If ranker drops poorly performing sentence while a client is
+    #still testing on it, on return, drop client's test data for that sentance
 
 #https://en.wikipedia.org/wiki/Garden_path_sentence#Brain_processing_in_computation
 
@@ -32,16 +34,22 @@ try:
     import tornado.ioloop
 
     from rank import Ranker
+    from rank import Pairer
     from sentence import Sentencer
 
 except ImportError:
     raise ImportError('<Main import error>')
 
-global Sentencer, Ranker
+global Sentencer, Ranker, Pairer
 
 class WebSocketHandler(tornado.websocket.WebSocketHandler):
+    pairs = []
+
     def open(self):
         print "Websocket connected"
+
+        #Get n pairs
+
 
         #Send order
         #ID of sen1
@@ -51,13 +59,13 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
 
         #TODO TEST CASE
         self.write_message(str(0))
-        self.write_message(ranker.getData(0))
+        self.write_message(' '.join(ranker.getData(0)))
         self.write_message(str(1))
-        self.write_message(ranker.getData(1))
+        self.write_message(' '.join(ranker.getData(1)))
         self.write_message(str(2))
-        self.write_message(ranker.getData(2))
+        self.write_message(' '.join(ranker.getData(2)))
         self.write_message(str(3))
-        self.write_message(ranker.getData(3))
+        self.write_message(' '.join(ranker.getData(3)))
 
         #Send each word of each sentance
         #for i in range(0, ranker.t_index):
@@ -91,8 +99,8 @@ class Application(tornado.web.Application):
         tornado.web.Application.__init__(self, handlers, **settings)
 
 if __name__ == '__main__':
-    #Generate sentances and init table
 
+    #Generate sentances and init table
     sGen = Sentencer()
     ranker = Ranker()
 
