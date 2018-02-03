@@ -92,12 +92,12 @@ class Application(tornado.web.Application):
 
 if __name__ == '__main__':
     #Generate sentances and init table
+
     sGen = Sentencer()
     ranker = Ranker()
 
-    for i in range(0, 10):
-        sen = sGen.getSentenceString()
-        ranker.addToTable(sen)
+    sen = sGen.getNSentences(10)
+    ranker.addAllToTable(sen)
     ranker.printAll()
 
     print "Starting server..."

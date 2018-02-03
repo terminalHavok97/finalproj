@@ -25,6 +25,11 @@ class Ranker:
         self.table.append(l)
         self.t_index += 1
 
+    #Add n sentences to table
+    def addAllToTable(self, array):
+        for i in range(0, len(array)):
+            self.addToTable(array[i])
+
     #Remove sentence with ID from table
     def removeFromTable(self, ID):
         if ID > self.t_index or ID < 0:
@@ -143,13 +148,3 @@ class Ranker:
         result.append(l1[0])
         result.append(l2[0])
         return result
-
-    #Sanity check
-    def findDuplicates(self):
-        for i in range(0, self.t_index):
-            for j in range(0, self.t_index):
-                if (i == j):
-                    pass
-                if (getData(i) != getData(j)):
-                    print "Duplicates detected at " + i + " " + j
-                    removeFromTable(j)

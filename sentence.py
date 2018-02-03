@@ -8,7 +8,7 @@ class Sentencer:
 
     #Read in word lists
     def __init__(self):
-        self.maxCycles  = 1000
+        self.maxCycles  = 10
         self.nouns      = self.__readWords("assets/nouns.txt")
         self.verbs      = self.__readWords("assets/verbs.txt")
         self.adjs       = self.__readWords("assets/adjs.txt")
@@ -16,42 +16,56 @@ class Sentencer:
 
     #Return an array of n sentances
     def getNSentences(self, n):
+        '''
+        array = [['cat', 'bites', 'old', 'test'], ['cat', 'bites', 'old', 'test'], ['cat', 'farts', 'a', 'lot']]
+        no = self.__findDuplicates(array)
+        print ""
+        print "NO: " + str(no)
+        print ""
+        return array
+        '''
+
         array = []
         correct = False
         cycles = 0
         for i in range(0, n):
-            array.append(__getSentence())
+            array.append(self.__getSentence())
 
         while (correct == False):
             cycles += 1
             if (cycles >= self.maxCycles):
                 raise Exception("Error - Can't generate data without duplications, consider using a bigger dataset")
-            check = __findDuplicates(array, n)
-            if (check.length == 0):
+            check = self.__findDuplicates(array)
+            if (len(check) == 0):
                 correct = True
             else:
+                print "Duplicates detected - Removing and regenerating"
                 #Remove sentances at indexs in check and replace with new sentances
                 for i in check:
-                    array[i] = __getSentence()
+                    array[i] = self.__getSentence()
 
 
         return array
 
     #Find and remove any duplicate sentances in an array of sentances
     #Returns 0 if correct, -n of duplicates otherwise
-    def __findDuplicates(self, array, n):
+    def __findDuplicates(self, array):
+        n = len(array)
         no = []
         for i in range(0, n):
             for j in range(0, n):
                 if (i == j):
-                    pass
-                if (array[i] != array[j]):
-                    for k in no:
-                        if (i == k || j == k):
-                            pass
-                        else:
-                            print "Duplicates detected, regenerating input"
-                            no.append(i)
+                    continue
+                if (array[i] == array[j]):
+                    print "Duplicates detected " + str(i) + " " + str(j)
+                    if (len(no) == 0):
+                        no.append(i)
+                    else:
+                        for k in no:
+                            if (i == k or j == k):
+                                pass
+                            else:
+                                no.append(i)
         return no
 
 
