@@ -7,13 +7,42 @@
   <link href="jspsych-6.0.1/css/jspsych.css" rel="stylesheet" type="text/css"></link>
   <script type=text/javascript>
       var ws;
-      var sentences = [];
+      var test_pairs = [];
       var timeline = [];
+      var s = {};
+      var counter = 0;
 
       ws = new WebSocket("ws://localhost:3000/websocket");
 
       ws.onmessage = function(e) {
-         console.log("Received word: " + e.data);
+        console.log("Received word: " + e.data);
+        switch (counter) {
+          case 0:
+            //ID1
+            s["ID0"] = e.data;
+            counter++;
+            break;
+          case 1:
+            //Data1
+            s["data0"] = e.data;
+            counter++;
+            break;
+          case 2:
+            //ID2
+            s["ID1"] = e.data;
+            counter++;
+            break;
+          case 3:
+            //Data2
+            s["data1"] = e.data;
+            test_pairs.append(s);
+            counter = 0;
+            break;
+          default:
+            console.log("Error - Data counter error");
+        }
+
+
          sentences.push(e.data);
       };
 
@@ -42,8 +71,14 @@
               "<p>If the sentance contains the name of a <strong>fish</strong>" +
               ", then press the <strong>F</strong> key</p>" +
               "<p>You will only have 5 seconds to answer</p>" +
-              "<p>Press any key to being<p>"
+              "<p>Press any key to being<p>",
+        post_trial_gap: 2000
       };
+      timeline.push(instructions_block);
+
+      var trial
+
+
 
       var test_block = {
         type: "html-keyboard-response",

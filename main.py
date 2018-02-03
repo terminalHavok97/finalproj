@@ -42,10 +42,27 @@ global Sentencer, Ranker
 class WebSocketHandler(tornado.websocket.WebSocketHandler):
     def open(self):
         print "Websocket connected"
+
+        #Send order
+        #ID of sen1
+        #Data of sen1
+        #ID of sen2
+        #Data of sen2
+
+        #TODO TEST CASE
+        self.write_message(0)
+        self.write_message(ranker.getData(0))
+        self.write_message(1)
+        self.write_message(ranker.getData(1))
+        self.write_message(2)
+        self.write_message(ranker.getData(2))
+        self.write_message(3)
+        self.write_message(ranker.getData(3))
+
         #Send each word of each sentance
-        for i in range(0, ranker.t_index):
-            sen = ranker.getData(i)
-            self.write_message(sen)
+        #for i in range(0, ranker.t_index):
+        #    sen = ranker.getData(i)
+        #    self.write_message(sen)
 
     def on_message(self, message):
         #self.write_message(u"Your message was: " + message)
