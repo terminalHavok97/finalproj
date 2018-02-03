@@ -32,7 +32,7 @@ class Sentencer:
             else:
                 #Remove sentances at indexs in check and replace with new sentances
                 for i in check:
-                    
+                    array[i] = __getSentence()
 
 
         return array
