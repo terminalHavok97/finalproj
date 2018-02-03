@@ -153,9 +153,21 @@ class Ranker:
     def pickPairs(self, n):
         #Assign an interestingness score to each sentance
         #Will then pick pairs which are (mostly) close to each other in this score
+        result = []
+        l1 = None
+        l2 = None
+        score = []
+
         for i in self.table:
             #TODO See just how good this metric is?
-            score = (i[2] / 100.0) - (10.0 / i[3])
+            score.append((i[2] / 100.0) - (10.0 / i[3]))
+
+        #Pick top-ranked sentance
+        l1 = float("-inf")
+        
+
+        #Pick sentance with
+
 
 
 
