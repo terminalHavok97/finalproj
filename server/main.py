@@ -21,6 +21,8 @@ exp = Experiment(3, 5, 10)
 #TODO JS psych - Could be an option for building the client stuff
 #TODO Make sure there's a "how many left" type thing on the client
 
+#https://en.wikipedia.org/wiki/Garden_path_sentence#Brain_processing_in_computation
+
 '''TODO
     1. Start client process
     2. Client contacts server, and asks for a set of matches

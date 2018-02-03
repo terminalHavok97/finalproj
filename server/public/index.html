@@ -8,14 +8,22 @@
     </head>
     <body>
     </body>
-    <script>
+    <script type="text/javascript">
 
-    var sentance_list = [
-      "cat",
-      "dog",
-      "blue",
-      "red"
-    ];
+    var connection = new WebSocket('ws://html5rocks.websocket.org/echo',
+    ['soap', 'xmpp']);
+
+    connection.onopen = function() {
+      connection.send('Ping');
+    };
+
+    connection.onerror = function(error) {
+      console.log('Websocket Error ' + error);
+    };
+
+    connection.onmessage = function(msg) {
+      console.log('Server: ' msg.data);
+    };*/
 
     var welcome_block = {
         type: "html-keyboard-response",
