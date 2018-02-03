@@ -1,0 +1,15 @@
+fat
+old
+new
+nice
+clean
+big
+small
+tall
+short
+cold
+hot
+thin
+weird
+fast
+slow
