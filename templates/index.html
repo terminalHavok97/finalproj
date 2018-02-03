@@ -12,6 +12,14 @@
       var s = {};
       var counter = 0;
 
+      function printAll(s) {
+        var value;
+        for (var name in s) {
+          value = s[name];
+          console.log(name, value);
+        }
+      }
+
       ws = new WebSocket("ws://localhost:3000/websocket");
 
       ws.onmessage = function(e) {
@@ -35,21 +43,16 @@
           case 3:
             //Data2
             s["data1"] = e.data;
-            test_pairs.append(s);
+            test_pairs.push(s);
+            printAll(s);
             counter = 0;
             break;
           default:
             console.log("Error - Data counter error");
         }
-
-
-         sentences.push(e.data);
       };
 
       function sendMsg() {
-        for (i=0; i<sentences.length; i++) {
-          console.log("Word[" + i + "] " + sentences[i]);
-        }
         ws.send(document.getElementById('msg').value);
       }
 
@@ -83,8 +86,7 @@
       var test_block = {
         type: "html-keyboard-response",
         stimulus: function() {
-          console.log("TEST: " + sentences[0]);
-          return "<p>" + sentences[0] + "</p>";
+          return "TEST";
         }
       };
       timeline.push(test_block);

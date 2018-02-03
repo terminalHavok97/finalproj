@@ -50,13 +50,13 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
         #Data of sen2
 
         #TODO TEST CASE
-        self.write_message(0)
+        self.write_message(str(0))
         self.write_message(ranker.getData(0))
-        self.write_message(1)
+        self.write_message(str(1))
         self.write_message(ranker.getData(1))
-        self.write_message(2)
+        self.write_message(str(2))
         self.write_message(ranker.getData(2))
-        self.write_message(3)
+        self.write_message(str(3))
         self.write_message(ranker.getData(3))
 
         #Send each word of each sentance
