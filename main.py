@@ -32,11 +32,8 @@ try:
     import tornado.websocket
     import tornado.httpserver
     import tornado.ioloop
-
     from rank import Ranker
-    from rank import Pairer
     from sentence import Sentencer
-
 except ImportError:
     raise ImportError('<Main import error>')
 

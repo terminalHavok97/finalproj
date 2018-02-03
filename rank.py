@@ -44,7 +44,7 @@ class Ranker:
     #Print everything in the table
     def printAll(self):
         print "==================="
-        print "ID == Data == Rank == Comparisons"
+        print "ID == Data == Rank == Comparisons
         print ""
         for i in self.table:
             print i[0], i[1], i[2], i[3]
@@ -154,9 +154,12 @@ class Ranker:
         #Assign an interestingness score to each sentance
         #Will then pick pairs which are (mostly) close to each other in this score
         for i in self.table:
-            score = 0
+            #TODO See just how good this metric is?
+            score = (i[2] / 100.0) - (10.0 / i[3])
+
+
 
     def prune(self):
         #After n plays, each sentance will be able to be pruned if in the
-        # bottom n % of the table
+        # bottom n % of the table -- That'll probs be 2nd STDEV
         print "PRUNE"
