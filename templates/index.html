@@ -12,14 +12,12 @@
 
       var cat = "cat";
 
-      function onLoad() {
-          ws = new WebSocket("ws://localhost:3000/websocket");
+      ws = new WebSocket("ws://localhost:3000/websocket");
 
-          ws.onmessage = function(e) {
-             console.log("Received word: " + e.data);
-             sentences.push(e.data);
-          };
-      }
+      ws.onmessage = function(e) {
+         console.log("Received word: " + e.data);
+         sentences.push(e.data);
+      };
 
       function sendMsg() {
         for (i=0; i<sentences.length; i++) {
@@ -63,7 +61,7 @@
       })
   </script>
 </head>
-<body onload="onLoad();">
+<body>
 </body>
 <!--<body onload="onLoad();">
     <strong>Message to Send:</strong>&nbsp;<input type="text" id="msg" maxlength="25" />
