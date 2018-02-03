@@ -143,3 +143,13 @@ class Ranker:
         result.append(l1[0])
         result.append(l2[0])
         return result
+
+    #Sanity check
+    def findDuplicates(self):
+        for i in range(0, self.t_index):
+            for j in range(0, self.t_index):
+                if (i == j):
+                    pass
+                if (getData(i) != getData(j)):
+                    print "Duplicates detected at " + i + " " + j
+                    removeFromTable(j)
