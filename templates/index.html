@@ -1,30 +1,55 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Tornado WebSockets</title>
-    <script>
-        var ws;
-        var words = [];
+  <title>Experiment</title>
+  <script src="jspsych-6.0.1/jspsych.js"></script>
+  <script src="jspsych-6.0.1/plugins/jspsych-html-keyboard-response.js"></script>
+  <link href="jspsych-6.0.1/css/jspsych.css" rel="stylesheet" type="text/css"></link>
+  <script type=text/javascript>
+      var ws;
+      var sentences = [];
 
-        function onLoad() {
-            ws = new WebSocket("ws://localhost:3000/websocket");
+      function onLoad() {
+          ws = new WebSocket("ws://localhost:3000/websocket");
 
-            ws.onmessage = function(e) {
-               console.log("Received word: " + e.data);
-               words.push(e.data);
-            };
+          ws.onmessage = function(e) {
+             console.log("Received word: " + e.data);
+             sentences.push(e.data);
+          };
+      }
+
+      function sendMsg() {
+        for (i=0; i<sentences.length; i++) {
+          console.log("Word[" + i + "] " + sentences[i]);
         }
+        ws.send(document.getElementById('msg').value);
+      }
 
-        function sendMsg() {
-          for (i=0; i<words.length; i++) {
-            console.log("Word[" + i + "] " + words[i]);
-          }
-          ws.send(document.getElementById('msg').value);
-        }
-    </script>
+      var welcome_block = {
+          type: "html-keyboard-response",
+          stimulus: "<h1>Welcome to the experiment. Press any key to continue</h1>"
+      };
+
+      var test_block = {
+        type: "html-keyboard-response"
+        //TODO Fix this, find a way to access js vars in output
+        stimulus: sentences[0];
+      };
+
+      var timeline = [];
+      timeline.push(welcome_block);
+      timeline.push(test_block);
+
+      jsPsych.init({
+          timeline: timeline
+      })
+  </script>
 </head>
 <body onload="onLoad();">
+</body>
+<!--<body onload="onLoad();">
     <strong>Message to Send:</strong>&nbsp;<input type="text" id="msg" maxlength="25" />
     &nbsp;<input type="button" onclick="sendMsg();" value="Send" />
-</body>
+</body>-->
+
 </html>
