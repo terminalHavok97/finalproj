@@ -18,12 +18,13 @@
           value = s[name];
           console.log(name, value);
         }
+        console.log("");
       }
 
       ws = new WebSocket("ws://localhost:3000/websocket");
 
       ws.onmessage = function(e) {
-        console.log("Received word: " + e.data);
+        //console.log("Received word: " + e.data);
         switch (counter) {
           case 0:
             //ID1
@@ -44,7 +45,7 @@
             //Data2
             s["data1"] = e.data;
             test_pairs.push(s);
-            //printAll(s);
+            printAll(s);
             counter = 0;
             break;
           default:
