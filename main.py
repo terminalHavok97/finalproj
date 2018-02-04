@@ -14,6 +14,7 @@
 #TODO Make sure there's a "how many left" type thing on the client
 #TODO If ranker drops poorly performing sentence while a client is
     #still testing on it, on return, drop client's test data for that sentance
+#TODO Have logs saved for each client response, init of table, and final results
 
 #https://en.wikipedia.org/wiki/Garden_path_sentence#Brain_processing_in_computation
 

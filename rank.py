@@ -4,9 +4,10 @@
 class Ranker:
     try:
         import random
+        import os
     except ImportError:
         raise ImportError('<Ranker import error>')
-    global random
+    global random, os
 
     #TABLE DATA
     #t[0] = ID
@@ -164,7 +165,7 @@ class Ranker:
 
         #Pick top-ranked sentance
         l1 = float("-inf")
-        
+
 
         #Pick sentance with
 
@@ -175,3 +176,7 @@ class Ranker:
         #After n plays, each sentance will be able to be pruned if in the
         # bottom n % of the table -- That'll probs be 2nd STDEV
         print "PRUNE"
+
+    #Save a copy of table in the logs dir
+    def saveTable(self):
+        return True
