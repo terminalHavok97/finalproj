@@ -50,7 +50,8 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
         print "Websocket connected"
 
         #Get n pairs
-
+        #TODO Upgrade to better version
+        pairs = ranker.pickPairsNaive(20)
 
         #Send order
         #ID of sen1
@@ -58,20 +59,12 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
         #ID of sen2
         #Data of sen2
 
-        #TODO TEST CASE
-        self.write_message(str(0))
-        self.write_message(' '.join(ranker.getData(0)))
-        self.write_message(str(1))
-        self.write_message(' '.join(ranker.getData(1)))
-        self.write_message(str(2))
-        self.write_message(' '.join(ranker.getData(2)))
-        self.write_message(str(3))
-        self.write_message(' '.join(ranker.getData(3)))
-
-        #Send each word of each sentence
-        #for i in range(0, ranker.t_index):
-        #    sen = ranker.getData(i)
-        #    self.write_message(sen)
+        for p in pairs:
+            print p
+            self.write_message(str(p[0]))
+            self.write_message(' '.join(ranker.getData(p[0])))
+            self.write_message(str(p[1]))
+            self.write_message(' '.join(ranker.getData(p[1])))
 
     def on_message(self, message):
         #self.write_message(u"Your message was: " + message)

@@ -150,6 +150,21 @@ class Ranker:
         result.append(l2[0])
         return result
 
+    #A naive implementation for pair picking relying only on __find2LeastPlayed
+    def pickPairsNaive(self, n):
+        pairs = []
+
+        for i in range(0, n):
+            pairs.append(self.__find2LeastPlayed())
+            self.table[pairs[i][0]][3] += 1
+            self.table[pairs[i][1]][3] += 1
+
+        for p in pairs:
+            self.table[p[0]][3] -= 1
+            self.table[p[1]][3] -= 1
+
+        return pairs
+
     #Choose the n most interesting pairs
     def pickPairs(self, n):
         #Assign an interestingness score to each sentence
