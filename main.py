@@ -3,8 +3,8 @@
 
 #TODO Work out how sample sizes and multiple participants will work
 #TODO Look at pruning out some bad sentences
-#TODO Attention trap - Every n sentances, do something weird requiring a 3rd type
-# of key press. Could do a fish sentance?
+#TODO Attention trap - Every n sentences, do something weird requiring a 3rd type
+# of key press. Could do a fish sentence?
 #TODO Add rank element based on a gaussian, so matching isn't just based
 # on least played
 #TODO Make GUI class for word matching - only eeg needs to be audio only
@@ -13,20 +13,22 @@
 #TODO JS psych - Could be an option for building the client stuff
 #TODO Make sure there's a "how many left" type thing on the client
 #TODO If ranker drops poorly performing sentence while a client is
-    #still testing on it, on return, drop client's test data for that sentance
+    #still testing on it, on return, drop client's test data for that sentence
 #TODO Have logs saved for each client response, init of table, and final results
+#TODO Upgrade prune so that it takes note mostly of 3 classes - the best, the worst, and the median
+    #Each of these classes can hold a number of sentences
 
 #https://en.wikipedia.org/wiki/Garden_path_sentence#Brain_processing_in_computation
 
 '''TODO
     1. Start client process
     2. Client contacts server, and asks for a set of matches
-        a. Server picks from sentances that its most interested in
+        a. Server picks from sentences that its most interested in
         b. Server determines matches, and sends those to client
     3. Client recives a set of matches from the server, and runs them in experiment
     4. Client records results of each match, sends those back to server when done
         a. Server takes set of match results, and applies those to their respective
-        sentances, updating the rankings between them'''
+        sentences, updating the rankings between them'''
 
 try:
     import tornado.web
@@ -65,7 +67,7 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
         self.write_message(str(3))
         self.write_message(' '.join(ranker.getData(3)))
 
-        #Send each word of each sentance
+        #Send each word of each sentence
         #for i in range(0, ranker.t_index):
         #    sen = ranker.getData(i)
         #    self.write_message(sen)
@@ -98,7 +100,7 @@ class Application(tornado.web.Application):
 
 if __name__ == '__main__':
 
-    #Generate sentances and init table
+    #Generate sentences and init table
     sGen = Sentencer()
     ranker = Ranker()
 

@@ -14,7 +14,7 @@ class Sentencer:
         self.adjs       = self.__readWords("assets/adjs.txt")
         self.atten      = self.__readWords("assets/fish.txt")
 
-    #Return an array of n sentances
+    #Return an array of n sentences
     def getNSentences(self, n):
         '''
         array = [['cat', 'bites', 'old', 'test'], ['cat', 'bites', 'old', 'test'], ['cat', 'farts', 'a', 'lot']]
@@ -40,14 +40,14 @@ class Sentencer:
                 correct = True
             else:
                 print "Duplicates detected - Removing and regenerating"
-                #Remove sentances at indexs in check and replace with new sentances
+                #Remove sentences at indexs in check and replace with new sentences
                 for i in check:
                     array[i] = self.__getSentence()
 
 
         return array
 
-    #Find and remove any duplicate sentances in an array of sentances
+    #Find and remove any duplicate sentences in an array of sentences
     #Returns 0 if correct, -n of duplicates otherwise
     def __findDuplicates(self, array):
         n = len(array)
@@ -81,7 +81,7 @@ class Sentencer:
         string = array[0] + " " + array[1] + " " + array[2] + " " + array[3]
         return string
 
-    #Give the user a sentance
+    #Give the user a sentence
     #Assuming SUBJECT VERB ADJ NOUN structure
     def __getSentence(self):
         while (True):
