@@ -9,97 +9,124 @@
       var ws;
       var test_pairs = [];
       var timeline = [];
-      var s = {};
-      var counter = 0;
-
-      function printAll(s) {
-        var value;
-        for (var name in s) {
-          value = s[name];
-          console.log(name, value);
-        }
-        console.log("");
-      }
+      var s = [];
+      var counter = -1;
+      var index = 0;
+      var tests = -1;
 
       ws = new WebSocket("ws://localhost:3000/websocket");
 
       ws.onmessage = function(e) {
         //console.log("Received word: " + e.data);
         switch (counter) {
+          case -1:
+            tests = e.data;
+            console.log("Tests: " + tests);
+            counter++;
+            break;
           case 0:
             //ID1
-            s["ID0"] = e.data;
+            s[0] = e.data;
             counter++;
             break;
           case 1:
             //Data1
-            s["data0"] = e.data;
+            s[1] = e.data;
             counter++;
             break;
           case 2:
             //ID2
-            s["ID1"] = e.data;
+            s[2] = e.data;
             counter++;
             break;
           case 3:
             //Data2
-            s["data1"] = e.data;
+            s[3] = e.data;
             test_pairs.push(s);
-            printAll(s);
+            //printAll(s);
             counter = 0;
             break;
           default:
             console.log("Error - Data counter error");
         }
+
+        if (test_pairs.length >= (tests - 1)) {
+          runExp();
+        }
+
       };
+
+      function printAll() {
+        for (i=0; i<test_pairs.length; i++) {
+          console.log(test_pairs[i][0] + " " + test_pairs[i][1]);
+          console.log(test_pairs[i][2] + " " + test_pairs[i][3]);
+          console.log("");
+        }
+      }
 
       function sendMsg() {
         ws.send(document.getElementById('msg').value);
       }
 
-      var welcome_block = {
+      function runExp() {
+
+        var welcome_block = {
+            type: "html-keyboard-response",
+            stimulus: "<h1>Welcome to the experiment. Press any key to continue</h1>"
+        };
+        timeline.push(welcome_block);
+
+        var instructions_block = {
           type: "html-keyboard-response",
-          stimulus: "<h1>Welcome to the experiment. Press any key to continue</h1>"
-      };
-      timeline.push(welcome_block);
+          stimulus: "<p>In this experiment, two sentences will appear one after " +
+                "another in the center of the screen.</p><p>You will need to " +
+                "compare them, and choose which one sounds more <strong>" +
+                "normal</strong> in everyday speech.</p><p>If you think " +
+                "the first sentence is more normal, press the <strong>A" +
+                "</strong> button</p><p>If you think the second sentence is " +
+                "more normal, press the <strong>D</strong> button</p>" +
+                "<p>If the sentence contains the name of a <strong>fish</strong>" +
+                ", then press the <strong>F</strong> key</p>" +
+                "<p>You will only have 5 seconds to answer</p>" +
+                "<p>Press any key to being<p>",
+          post_trial_gap: 2000
+        };
+        timeline.push(instructions_block);
 
-      var instructions_block = {
-        type: "html-keyboard-response",
-        stimulus: "<p>In this experiment, two sentences will appear one after " +
-              "another in the center of the screen.</p><p>You will need to " +
-              "compare them, and choose which one sounds more <strong>" +
-              "normal</strong> in everyday speech.</p><p>If you think " +
-              "the first sentence is more normal, press the <strong>A" +
-              "</strong> button</p><p>If you think the second sentence is " +
-              "more normal, press the <strong>D</strong> button</p>" +
-              "<p>If the sentence contains the name of a <strong>fish</strong>" +
-              ", then press the <strong>F</strong> key</p>" +
-              "<p>You will only have 5 seconds to answer</p>" +
-              "<p>Press any key to being<p>",
-        post_trial_gap: 2000
-      };
-      timeline.push(instructions_block);
+        var test_block = {
+          type: "html-keyboard-response",
+          trial_duration: 5000,
+          response_ends_trial: true,
+          choices: ['a', 'd', 'f'],
+          prompt: "<p>Which sounds more normal?</p><p>Press a for choice 1, Press d for choice 2</p>",
+          stimulus: function() {
+            var result = "<h2>" + test_pairs[index][1] + "</h2><h2>" + test_pairs[index][3] + "</h2>";
+            printAll();
+            //console.log(index);
+            index++;
+            return result;
+          }
+        };
 
+        var test_procedure = {
+          timeline: [test_block],
+          randomize_order: true,
+          repetitions: 20
+        };
+        timeline.push(test_procedure);
 
+        var debrief_block = {
+          type: "html-keyboard-response",
+          stimulus: "<p>Thank you for your time. Experiment complete</p>"
+        };
+        timeline.push(debrief_block);
 
-      var test_block = {
-        type: "html-keyboard-response",
-        stimulus: function() {
-          return "TEST";
-        }
-      };
-      timeline.push(test_block);
-
-      jsPsych.init({
-          timeline: timeline
-      });
+        jsPsych.init({
+            timeline: timeline
+        });
+      }
   </script>
 </head>
 <body>
 </body>
-<!--<body onload="onLoad();">
-    <strong>Message to Send:</strong>&nbsp;<input type="text" id="msg" maxlength="25" />
-    &nbsp;<input type="button" onclick="sendMsg();" value="Send" />
-</body>-->
-
 </html>

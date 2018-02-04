@@ -54,10 +54,13 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
         pairs = ranker.pickPairsNaive(20)
 
         #Send order
+        #No tests for init
         #ID of sen1
         #Data of sen1
         #ID of sen2
         #Data of sen2
+
+        self.write_message(str(20))
 
         for p in pairs:
             print p
