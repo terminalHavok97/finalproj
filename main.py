@@ -31,6 +31,7 @@
         sentences, updating the rankings between them'''
 
 try:
+    import os
     import tornado.web
     import tornado.websocket
     import tornado.httpserver
@@ -40,7 +41,7 @@ try:
 except ImportError:
     raise ImportError('<Main import error>')
 
-global Sentencer, Ranker, Pairer
+global Sentencer, Ranker, os
 
 class WebSocketHandler(tornado.websocket.WebSocketHandler):
     pairs = []
@@ -80,21 +81,16 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
     def on_close(self):
         print "Websocket destroyed"
 
-
-class IndexPageHandler(tornado.web.RequestHandler):
-    def get(self):
-        self.render("index.html")
-
-
 class Application(tornado.web.Application):
     def __init__(self):
         handlers = [
-            (r'/', IndexPageHandler),
-            (r'/websocket', WebSocketHandler)
+            (r'/websocket', WebSocketHandler),
+            (r'/(.*)', tornado.web.StaticFileHandler, {'path': './templates', 'default_filename': 'index.html'}),
         ]
 
         settings = {
-            'template_path': 'templates'
+            'template_path': 'templates',
+            'static_path': os.path.join(os.path.dirname("jspsych-6.0.1"), "jspsych.js")
         }
         tornado.web.Application.__init__(self, handlers, **settings)
 

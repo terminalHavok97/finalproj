@@ -16,15 +16,6 @@ class Sentencer:
 
     #Return an array of n sentences
     def getNSentences(self, n):
-        '''
-        array = [['cat', 'bites', 'old', 'test'], ['cat', 'bites', 'old', 'test'], ['cat', 'farts', 'a', 'lot']]
-        no = self.__findDuplicates(array)
-        print ""
-        print "NO: " + str(no)
-        print ""
-        return array
-        '''
-
         array = []
         correct = False
         cycles = 0
@@ -43,7 +34,6 @@ class Sentencer:
                 #Remove sentences at indexs in check and replace with new sentences
                 for i in check:
                     array[i] = self.__getSentence()
-
 
         return array
 
