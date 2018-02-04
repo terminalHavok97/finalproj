@@ -45,7 +45,7 @@ class Ranker:
     #Print everything in the table
     def printAll(self):
         print "==================="
-        print "ID == Data == Rank == Comparisons
+        print "ID == Data == Rank == Comparisons"
         print ""
         for i in self.table:
             print i[0], i[1], i[2], i[3]
