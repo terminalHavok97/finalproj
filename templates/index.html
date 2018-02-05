@@ -17,7 +17,6 @@
       ws = new WebSocket("ws://localhost:3000/websocket");
 
       ws.onmessage = function(e) {
-        //console.log("Received word: " + e.data);
         switch (counter) {
           case -1:
             tests = e.data;
@@ -43,7 +42,7 @@
             //Data2
             s[3] = e.data;
             test_pairs.push(s);
-            //printAll(s);
+            s = [];
             counter = 0;
             break;
           default:
@@ -111,7 +110,7 @@
         var test_procedure = {
           timeline: [test_block],
           randomize_order: true,
-          repetitions: 20
+          repetitions: tests,
         };
         timeline.push(test_procedure);
 
