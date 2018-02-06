@@ -83,6 +83,14 @@ class Ranker:
     def __getKValue(self, ID):
         return 32
 
+    #Update n comparisons into the table where each elem is an array with two elements.
+    #In 2nd array, 0th index is ID of victor, 1st index is ID of loser
+    def updateNFromComparison(self, array):
+        for i in array:
+            updateFromComparison(i[0], i[1])
+
+
+    #Update the table with the results of the comparison of two IDS. ID1 was the victor
     def updateFromComparison(self, ID1, ID2, draw=False):
         self.table[ID1][3] += 1
         self.table[ID2][3] += 1
@@ -194,4 +202,8 @@ class Ranker:
 
     #Save a copy of table in the logs dir
     def saveTable(self):
+        return True
+
+    #Export a copy of the table after dividing data into seperate bins for analysis
+    def exportData(self):
         return True
