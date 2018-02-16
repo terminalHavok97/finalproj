@@ -56,11 +56,18 @@
 
       };
 
-      function printAll() {
+      function printAllPairs() {
         for (i=0; i<test_pairs.length; i++) {
           console.log(test_pairs[i][0] + " " + test_pairs[i][1]);
           console.log(test_pairs[i][2] + " " + test_pairs[i][3]);
           console.log("");
+        }
+      }
+
+      function printAllResults() {
+        console.log("Results:");
+        for (var i=0; i<results.length; i++) {
+          console.log(results[i]);
         }
       }
 
@@ -101,14 +108,32 @@
           type: "html-keyboard-response",
           trial_duration: 5000,
           response_ends_trial: true,
-          choices: ['a', 'd', 'f'],
+          choices: [65, 68, 70],
           prompt: "<p>Which sounds more normal?</p><p>Press a for choice 1, Press d for choice 2</p>",
+          data: jsPsych.timelineVariable('data'),
           stimulus: function() {
             var result = "<h2>" + test_pairs[index][1] + "</h2><h2>" + test_pairs[index][3] + "</h2>";
-            printAll();
-            //console.log(index);
-            index++;
             return result;
+          },
+          on_finish: function(data) {
+            //console.log(data.key_press);
+            var key = data.key_press;
+            if (key == null) {
+              console.log("NULL CASE");
+            }
+            else {
+              if (key == 65) {
+                results.push(test_pairs[index][0]);
+                index++;
+              }
+              else if (key == 68) {
+                results.push(test_pairs[index][2]);
+                index++;
+              }
+              else {
+                console.log("FISH CASE");
+              }
+            }
           }
         };
 
@@ -121,12 +146,15 @@
 
         var debrief_block = {
           type: "html-keyboard-response",
-          stimulus: "<p>Thank you for your time. Experiment complete</p>"
+          stimulus: "<p>Thank you for your time. Experiment complete</p>",
+          on_load: function() {
+            printAllResults();
+          }
         };
         timeline.push(debrief_block);
 
         jsPsych.init({
-            timeline: timeline
+            timeline: timeline,
         });
       }
   </script>
