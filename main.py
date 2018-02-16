@@ -44,17 +44,17 @@ except ImportError:
 global Sentencer, Ranker, os
 
 class WebSocketHandler(tornado.websocket.WebSocketHandler):
-    pairs = []
-    results = []
-    first = True
-    index = 0
-
     def open(self):
+        self.pairs = []
+        self.results = []
+        self.first = True
+        self.index = 0
+
         print "Websocket connected"
 
         #Get n pairs
         #TODO Upgrade to better version
-        pairs = ranker.pickPairsNaive(20)
+        self.pairs = ranker.pickPairsNaive(20)
 
         #Send order
         #No tests for init
@@ -65,24 +65,29 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
 
         self.write_message(str(20))
 
-        for p in pairs:
+        for p in self.pairs:
             self.write_message(str(p[0]))
             self.write_message(' '.join(ranker.getData(p[0])))
             self.write_message(str(p[1]))
             self.write_message(' '.join(ranker.getData(p[1])))
-        print "Pairs sent\n"
+        print "Test data sent\n"
 
     def on_message(self, msg):
-        results[index].append(msg)
-        if (first == True):
-            first == False
+        print "MSG " + str(self.index) + " " + str(self.first)
+        self.index = 2
+        if (self.first == True):
+            self.results.append([])
+            self.results[self.index].append(int(msg))
+            self.first == False
         else:
-            first == True
-            index += 1
+            self.results[self.index].append(int(msg))
+            self.first == True
+            self.index = self.index + 1
 
     def on_close(self):
         print "Websocket destroyed"
-        ranker.updateNFromComparison(results)
+        print "Length of results: " + str(len(self.results))
+        ranker.updateNFromComparison(self.results)
         ranker.printAll()
 
 class Application(tornado.web.Application):

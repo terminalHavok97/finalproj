@@ -83,13 +83,6 @@ class Ranker:
     def __getKValue(self, ID):
         return 32
 
-    #Update n comparisons into the table where each elem is an array with two elements.
-    #In 2nd array, 0th index is ID of victor, 1st index is ID of loser
-    def updateNFromComparison(self, array):
-        for i in array:
-            updateFromComparison(i[0], i[1])
-
-
     #Update the table with the results of the comparison of two IDS. ID1 was the victor
     def updateFromComparison(self, ID1, ID2, draw=False):
         self.table[ID1][3] += 1
@@ -110,6 +103,18 @@ class Ranker:
 
         self.table[ID1][2] = rank1
         self.table[ID2][2] = rank2
+
+    #Update n comparisons into the table where each elem is an array with two elements.
+    #In 2nd array, 0th index is ID of victor, 1st index is ID of loser
+    def updateNFromComparison(self, array):
+        '''for i in array:
+            print i[0], i[1]
+            self.updateFromComparison(i[0], i[1])'''
+
+        for i in range(0, len(array)):
+            for j in range(0, len(array[i])):
+                print array[i][j]
+            print "\n"
 
     #Returns the 2 least played sentences
     def __find2LeastPlayed(self):

@@ -152,6 +152,7 @@
             printAllResults();
             //Send results, and shut websocket once they're all sent
             if (sendResults() == 0) {
+              console.log("Closing websocket");
               ws.close();
             }
           },
