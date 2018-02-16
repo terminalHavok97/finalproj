@@ -45,6 +45,9 @@ global Sentencer, Ranker, os
 
 class WebSocketHandler(tornado.websocket.WebSocketHandler):
     pairs = []
+    results = []
+    first = True
+    index = 0
 
     def open(self):
         print "Websocket connected"
@@ -63,19 +66,24 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
         self.write_message(str(20))
 
         for p in pairs:
-            print p
             self.write_message(str(p[0]))
             self.write_message(' '.join(ranker.getData(p[0])))
             self.write_message(str(p[1]))
             self.write_message(' '.join(ranker.getData(p[1])))
+        print "Pairs sent\n"
 
-    def on_message(self, message):
-        #self.write_message(u"Your message was: " + message)
-        results = message
-        print "Results from client: " + message
+    def on_message(self, msg):
+        results[index].append(msg)
+        if (first == True):
+            first == False
+        else:
+            first == True
+            index += 1
 
     def on_close(self):
         print "Websocket destroyed"
+        ranker.updateNFromComparison(results)
+        ranker.printAll()
 
 class Application(tornado.web.Application):
     def __init__(self):
