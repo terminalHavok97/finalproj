@@ -46,15 +46,13 @@ global Sentencer, Ranker, os
 class WebSocketHandler(tornado.websocket.WebSocketHandler):
     def open(self):
         self.pairs = []
-        self.results = []
-        self.first = True
-        self.index = 0
+        self.raw = []
 
         print "Websocket connected"
 
         #Get n pairs
         #TODO Upgrade to better version
-        self.pairs = ranker.pickPairsNaive(20)
+        self.pairs = ranker.pickPairsNaive(10)
 
         #Send order
         #No tests for init
@@ -63,7 +61,7 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
         #ID of sen2
         #Data of sen2
 
-        self.write_message(str(20))
+        self.write_message(str(10))
 
         for p in self.pairs:
             self.write_message(str(p[0]))
@@ -73,20 +71,21 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
         print "Test data sent\n"
 
     def on_message(self, msg):
-        print "MSG " + str(self.index) + " " + str(self.first)
-        self.index = 2
-        if (self.first == True):
-            self.results.append([])
-            self.results[self.index].append(int(msg))
-            self.first == False
-        else:
-            self.results[self.index].append(int(msg))
-            self.first == True
-            self.index = self.index + 1
+        self.raw.append(int(msg))
+
+    def convertToArray(self):
+        l1 = -1
+        l2 = -1
+        for i in range(0, len(self.raw), 2):
+            l1 = self.raw[i]
+            l2 = self.raw[i+1]
+            r = [l1, l2]
+            self.results.append(r)
 
     def on_close(self):
         print "Websocket destroyed"
-        print "Length of results: " + str(len(self.results))
+        self.results = []
+        self.convertToArray()
         ranker.updateNFromComparison(self.results)
         ranker.printAll()
 
@@ -116,7 +115,7 @@ if __name__ == '__main__':
     print "Starting server..."
     ws_app = Application()
     server = tornado.httpserver.HTTPServer(ws_app)
-    server.listen(3000)
-    print "Listening on port 3000"
+    server.listen(5000)
+    print "Listening on port 5000"
     print ""
     tornado.ioloop.IOLoop.instance().start()
