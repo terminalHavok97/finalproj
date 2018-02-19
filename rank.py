@@ -108,7 +108,6 @@ class Ranker:
     #In 2nd array, 0th index is ID of victor, 1st index is ID of loser
     def updateNFromComparison(self, array):
         for i in array:
-            print i[0], i[1]
             self.updateFromComparison(i[0], i[1])
 
     #Returns the 2 least played sentences

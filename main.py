@@ -1,7 +1,6 @@
 #!/usr/bin/python
 #Tom Vaughan - tv15461
 
-#TODO Work out how sample sizes and multiple participants will work
 #TODO Look at pruning out some bad sentences
 #TODO Attention trap - Every n sentences, do something weird requiring a 3rd type
 # of key press. Could do a fish sentence?
@@ -10,13 +9,10 @@
 #TODO Make GUI class for word matching - only eeg needs to be audio only
     #GUI needs to be made for web version, not this program which deals with
     # the server-side program
-#TODO JS psych - Could be an option for building the client stuff
 #TODO Make sure there's a "how many left" type thing on the client
 #TODO If ranker drops poorly performing sentence while a client is
     #still testing on it, on return, drop client's test data for that sentence
 #TODO Have logs saved for each client response, init of table, and final results
-#TODO Upgrade prune so that it takes note mostly of 3 classes - the best, the worst, and the median
-    #Each of these classes can hold a number of sentences
 
 #https://en.wikipedia.org/wiki/Garden_path_sentence#Brain_processing_in_computation
 
