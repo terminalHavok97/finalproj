@@ -24,6 +24,7 @@
       var counter = -1;
       var index = 0;
       var tests = -1;
+      var c = 0;
 
       ws = new WebSocket("ws://localhost:5000/websocket");
 
@@ -88,8 +89,8 @@
         console.log("Results all sent to server");
         return 0
       }
-      function runExp() {
 
+      function runExp() {
         var welcome_block = {
             type: "html-keyboard-response",
             stimulus: "<h1>Welcome to the experiment. Press any key to continue</h1>"
@@ -120,7 +121,8 @@
           choices: [65, 68, 70],
           data: jsPsych.timelineVariable('data'),
           stimulus: function() {
-            var result = "<div id=\"remaining\"><p>T</p></div><h2>" + test_pairs[index][1] + "</h2><h2>" + test_pairs[index][3] + "</h2>";
+            var result = "<div id=\"remaining\"><p>" + c + "/" + tests + "</p></div><h2>" + test_pairs[index][1] + "</h2><h2>" + test_pairs[index][3] + "</h2>";
+            ++c;
             return result;
           },
           prompt: "<p>Which sounds more normal?</p><p>Press a for choice 1, Press d for choice 2</p>",
