@@ -191,8 +191,9 @@ class Ranker:
 
         #Pick sentence with
 
-
-
+    #Takes an array of sentence pairs, and adds ~10% fish-containing pairs
+    def fishify(array):
+        return False
 
     def prune(self):
         #After n plays, each sentence will be able to be pruned if in the

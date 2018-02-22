@@ -37,6 +37,10 @@ class Sentencer:
 
         return array
 
+    #Returns a random sentence with one of the words as "fish"
+    def makeFishSentence():
+        return False
+
     #Find and remove any duplicate sentences in an array of sentences
     #Returns 0 if correct, -n of duplicates otherwise
     def __findDuplicates(self, array):
@@ -57,9 +61,6 @@ class Sentencer:
                             else:
                                 no.append(i)
         return no
-
-
-
 
     #Return the result of __getSentence as an array
     def getSentenceArray(self):

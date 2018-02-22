@@ -50,6 +50,7 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
         #TODO Upgrade to better version
         self.pairs = ranker.pickPairsNaive(10)
 
+
         #Send order
         #No tests for init
         #ID of sen1
