@@ -38,8 +38,23 @@ class Sentencer:
         return array
 
     #Returns a random sentence with one of the words as "fish"
-    def makeFishSentence():
-        return False
+    def __makeFishSentence(self):
+        s = self.__getSentence()
+        r = random.randint(0,3)
+        s[r] = "fish"
+        return s
+
+    #Takes an array of sentence pairs, and adds ~10% fish-containing pairs
+    def fishify(self, array):
+        result = array
+        length = int(len(array) * 0.1)
+        for i in range(0, length):
+            r = random.randint(0,1)
+            if (r == 0):
+                result.append([self.__makeFishSentence(), self.__getSentence()])
+            else:
+                result.append([self.__getSentence(), self.__makeFishSentence()])
+        return result
 
     #Find and remove any duplicate sentences in an array of sentences
     #Returns 0 if correct, -n of duplicates otherwise
