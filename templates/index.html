@@ -5,6 +5,16 @@
   <script type="text/javascript" src="jspsych-6.0.1/jspsych.js"></script>
   <script type="text/javascript" src="jspsych-6.0.1/plugins/jspsych-html-keyboard-response.js"></script>
   <link href="jspsych-6.0.1/css/jspsych.css" rel="stylesheet" type="text/css"></link>
+  <style type="text/css">
+    #remaning {
+      position: relative;
+    }
+    #remaining p {
+      position: absolute;
+      top: 5%;
+      right: 10%;
+    }
+  </style>
   <script type=text/javascript>
       var ws;
       var test_pairs = [];
@@ -108,12 +118,12 @@
           trial_duration: 5000,
           response_ends_trial: true,
           choices: [65, 68, 70],
-          prompt: "<p>Which sounds more normal?</p><p>Press a for choice 1, Press d for choice 2</p>",
           data: jsPsych.timelineVariable('data'),
           stimulus: function() {
-            var result = "<h2>" + test_pairs[index][1] + "</h2><h2>" + test_pairs[index][3] + "</h2>";
+            var result = "<div id=\"remaining\"><p>T</p></div><h2>" + test_pairs[index][1] + "</h2><h2>" + test_pairs[index][3] + "</h2>";
             return result;
           },
+          prompt: "<p>Which sounds more normal?</p><p>Press a for choice 1, Press d for choice 2</p>",
           on_finish: function(data) {
             //console.log(data.key_press);
             var key = data.key_press;
