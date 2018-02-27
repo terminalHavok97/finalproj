@@ -88,6 +88,7 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
     #TODO Check that only non-fish and non-null messages are added to table, and that the right number always come back
     def on_message(self, msg):
         self.raw.append(int(msg))
+        print msg
 
     def convertToArray(self):
         l1 = -1

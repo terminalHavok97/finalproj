@@ -25,7 +25,7 @@
       var counter = -1;
       var index = 0;
       var tests = -1;
-      var c = 0;
+      var c = 0; //How many tests are left to run
       var fish = [];
 
       ws = new WebSocket("ws://localhost:5000/websocket");
@@ -71,9 +71,17 @@
               fish.push(i);
             }
           }
+          //Get first index, then start experiment
+          index = getNewIndex();
           runExp();
         }
       };
+
+      function getNewIndex() {
+        var l = test_pairs.length;
+        var index = Math.floor(Math.random() * l);
+        return index;
+      }
 
       function printAllPairs() {
         for (i=0; i<test_pairs.length; i++) {
@@ -130,11 +138,14 @@
           data: jsPsych.timelineVariable('data'),
           stimulus: function() {
             var result = "<div id=\"remaining\"><p>" + c + "/" + tests + "</p></div><h2>" + test_pairs[index][1] + "</h2><h2>" + test_pairs[index][3] + "</h2>";
-            ++c;
             return result;
           },
           prompt: "<p>Which sounds more normal?</p><p>Press a for choice 1, Press d for choice 2</p>",
           on_finish: function(data) {
+            function removeTest(index) {
+              test_pairs.splice(index, 1);
+            }
+
             function isFish(index) {
               for (var i=0; i<fish.length; i++) {
                 if (fish[i] == index) {
@@ -151,28 +162,34 @@
               console.log("NULL CASE");
             }
             else {
-              if (isFish) {
+              if (isFish == true) {
                 if (key == 70) {
                   console.log("Fish detected");
-                  index++;
+                  removeTest(index);
+                  c++;
                 }
                 else {
                   console.log("You failed to detect the fish!");
-                  index++;
                 }
               }
               else {
                 if (key == 65) {
                   results.push(test_pairs[index][0]);
                   results.push(test_pairs[index][2]);
-                  index++;
+                  removeTest(index);
+                  c++;
                 }
                 else if (key == 68) {
                   results.push(test_pairs[index][2]);
                   results.push(test_pairs[index][0]);
-                  index++;
+                  removeTest(index);
+                  c++;
+                }
+                else if (key == 70) {
+                  console.log("You incorrectly detected the fish");
                 }
               }
+              index = getNewIndex();
             }
           }
         };
