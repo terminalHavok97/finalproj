@@ -63,19 +63,29 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
 
         self.write_message(str(l))
 
+        index = 0
         for p in self.pairs:
             if p[0] == -1: #Fish case
                 self.write_message(str(p[0]))
-                self.write_message(str(p[1]))
+                self.write_message(' '.join(p[1]))
                 self.write_message(str(p[2]))
-                self.write_message(str(p[3]))
+                self.write_message(' '.join(p[3]))
+                print "[" + str(index) + "]: " + (' '.join(p[1])) + " ==> F"
+                print "[" + str(index) + "]: " + (' '.join(p[3])) + " ==> F"
+                print ""
+                index += 1
             else:
                 self.write_message(str(p[0]))
                 self.write_message(' '.join(ranker.getData(p[0])))
                 self.write_message(str(p[1]))
                 self.write_message(' '.join(ranker.getData(p[1])))
+                print "[" + str(index) + "]: " + (' '.join(ranker.getData(p[0])))
+                print "[" + str(index) + "]: " + (' '.join(ranker.getData(p[1])))
+                print ""
+                index += 1
         print "Test data sent\n"
 
+    #TODO Check that only non-fish and non-null messages are added to table, and that the right number always come back
     def on_message(self, msg):
         self.raw.append(int(msg))
 

@@ -12,7 +12,6 @@ class Sentencer:
         self.nouns      = self.__readWords("assets/nouns.txt")
         self.verbs      = self.__readWords("assets/verbs.txt")
         self.adjs       = self.__readWords("assets/adjs.txt")
-        self.atten      = self.__readWords("assets/fish.txt")
 
     #Return an array of n sentences
     def getNSentences(self, n):

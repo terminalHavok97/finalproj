@@ -67,6 +67,7 @@
           //Check if any pairs in test_pairs have the word "fish" in them
           for (var i=0; i<test_pairs.length; i++) {
             if (test_pairs[i][0] == -1) {
+              console.log("Fish at test: " + i);
               fish.push(i);
             }
           }
@@ -76,8 +77,8 @@
 
       function printAllPairs() {
         for (i=0; i<test_pairs.length; i++) {
-          console.log(test_pairs[i][0] + " " + test_pairs[i][1]);
-          console.log(test_pairs[i][2] + " " + test_pairs[i][3]);
+          console.log("ID[" + i + "] " + test_pairs[i][0] + " " + test_pairs[i][1]);
+          console.log("ID[" + i + "] " + test_pairs[i][2] + " " + test_pairs[i][3]);
           console.log("");
         }
       }
@@ -95,15 +96,6 @@
         }
         console.log("Results all sent to server");
         return 0
-      }
-
-      function isFish(index) {
-        for (var i=0; i<fish.length; i++) {
-          if (fish[i] == index) {
-            return true;
-          }
-        }
-        return false;
       }
 
       function runExp() {
@@ -143,6 +135,15 @@
           },
           prompt: "<p>Which sounds more normal?</p><p>Press a for choice 1, Press d for choice 2</p>",
           on_finish: function(data) {
+            function isFish(index) {
+              for (var i=0; i<fish.length; i++) {
+                if (fish[i] == index) {
+                  return true;
+                }
+              }
+              return false;
+            }
+
             var key = data.key_press;
             var isFish = isFish(index);
             if (key == null) {
