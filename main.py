@@ -49,7 +49,10 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
         #Get n pairs
         #TODO Upgrade to better version
         self.pairs = ranker.pickPairsNaive(10)
-        self.pairs = sGen.fishify(self.pairs)
+        fish_length = int(len(self.pairs) * 0.1)
+        fish = sGen.fishify(fish_length)
+        self.pairs.extend(fish)
+        l = len(self.pairs)
 
         #Send order
         #No tests for init
@@ -58,17 +61,19 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
         #ID of sen2
         #Data of sen2
 
-        self.write_message(str(10))
+        self.write_message(str(l))
 
-        i = 0
         for p in self.pairs:
-            self.write_message(str(p[0]))
-            self.write_message(' '.join(ranker.getData(p[0])))
-            self.write_message(str(p[1]))
-            self.write_message(' '.join(ranker.getData(p[1])))
-            print "S1[" + str(i) + "]: " + (' '.join(ranker.getData(p[0])))
-            print "S2[" + str(i) + "]: " + (' '.join(ranker.getData(p[1])))
-            i += 1
+            if p[0] == -1: #Fish case
+                self.write_message(str(p[0]))
+                self.write_message(str(p[1]))
+                self.write_message(str(p[2]))
+                self.write_message(str(p[3]))
+            else:
+                self.write_message(str(p[0]))
+                self.write_message(' '.join(ranker.getData(p[0])))
+                self.write_message(str(p[1]))
+                self.write_message(' '.join(ranker.getData(p[1])))
         print "Test data sent\n"
 
     def on_message(self, msg):
