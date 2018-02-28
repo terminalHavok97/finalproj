@@ -25,7 +25,7 @@
       var counter = -1;
       var index = 0;
       var tests = -1;
-      var c = 0; //How many tests are left to run
+      var c = 0; //How many tests have run
       var fish = [];
 
       ws = new WebSocket("ws://localhost:5000/websocket");
@@ -170,6 +170,7 @@
                 }
                 else {
                   console.log("You failed to detect the fish!");
+                  tests = tests + 100;
                 }
               }
               else {
@@ -187,6 +188,7 @@
                 }
                 else if (key == 70) {
                   console.log("You incorrectly detected the fish");
+                  tests = tests + 100;
                 }
               }
               index = getNewIndex();
@@ -197,7 +199,7 @@
         var test_procedure = {
           timeline: [test_block],
           randomize_order: true,
-          repetitions: tests,
+          repetitions: tests //TODO Fix so it supports more repetitions and do-overs
         };
         timeline.push(test_procedure);
 
