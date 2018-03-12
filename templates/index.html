@@ -72,7 +72,8 @@
             }
           }
           //Get first index, then start experiment
-          index = getNewIndex();
+          //index = getNewIndex();
+          index = 0;
           runExp();
         }
       };
@@ -84,11 +85,13 @@
       }
 
       function printAllPairs() {
+        console.log("++++++++++++++++++++++++++++++++++++++");
         for (i=0; i<test_pairs.length; i++) {
           console.log("ID[" + i + "] " + test_pairs[i][0] + " " + test_pairs[i][1]);
           console.log("ID[" + i + "] " + test_pairs[i][2] + " " + test_pairs[i][3]);
-          console.log("");
+          console.log("++++++++++++++++++++++++++++++++++++++");
         }
+        console.log("");
       }
 
       function printAllResults() {
@@ -137,6 +140,7 @@
           choices: [65, 68, 70],
           data: jsPsych.timelineVariable('data'),
           stimulus: function() {
+            printAllPairs();
             var result = "<div id=\"remaining\"><p>" + c + "/" + tests + "</p></div><h2>" + test_pairs[index][1] + "</h2><h2>" + test_pairs[index][3] + "</h2>";
             return result;
           },
@@ -148,6 +152,7 @@
 
             function isFish(index) {
               for (var i=0; i<fish.length; i++) {
+                console.log("Fish at: " + fish[i]);
                 if (fish[i] == index) {
                   return true;
                 }
@@ -157,6 +162,7 @@
 
             var key = data.key_press;
             var isFish = isFish(index);
+            console.log("isFish = " + isFish);
             if (key == null) {
               //Just returns nothing - draw case. TODO Improve?
               console.log("NULL CASE");
@@ -165,7 +171,7 @@
               if (isFish == true) {
                 if (key == 70) {
                   console.log("Fish detected");
-                  removeTest(index);
+                  //removeTest(index);
                   c++;
                 }
                 else {
@@ -177,13 +183,13 @@
                 if (key == 65) {
                   results.push(test_pairs[index][0]);
                   results.push(test_pairs[index][2]);
-                  removeTest(index);
+                  //removeTest(index);
                   c++;
                 }
                 else if (key == 68) {
                   results.push(test_pairs[index][2]);
                   results.push(test_pairs[index][0]);
-                  removeTest(index);
+                  //removeTest(index);
                   c++;
                 }
                 else if (key == 70) {
@@ -191,18 +197,19 @@
                   tests = tests + 100;
                 }
               }
-              index = getNewIndex();
+              //index = getNewIndex();
+              index++;
             }
           }
         };
 
         var test_procedure = {
           timeline: [test_block],
-          randomize_order: true,
+          randomize_order: false,
           repetitions: tests //TODO Fix so it supports more repetitions and do-overs
         };
         timeline.push(test_procedure);
-
+fish
         var debrief_block = {
           type: "html-keyboard-response",
           stimulus: "<p>Thank you for your time. Experiment complete</p>",

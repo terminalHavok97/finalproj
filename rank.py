@@ -19,6 +19,8 @@ class Ranker:
     def __init__(self):
         self.table = []
         self.t_index = 0
+        self.fname = 'output/table'
+        self.w_index = 0
 
     #Add sentence to table
     def addToTable(self, data):
@@ -188,9 +190,7 @@ class Ranker:
         #Pick top-ranked sentence
         l1 = float("-inf")
 
-
-        #Pick sentence with        
-
+        #Pick sentence with
 
     def prune(self):
         #After n plays, each sentence will be able to be pruned if in the
@@ -203,4 +203,9 @@ class Ranker:
 
     #Export a copy of the table after dividing data into seperate bins for analysis
     def exportData(self):
-        return True
+        file = open((str(self.fname) + str(self.w_index) + ".txt"), 'w')
+        for i in range(0, len(self.table)):
+            for j in range(0, 4):
+                file.write(str(self.table[i][j]) + '\n')
+            file.write('\n')
+        file.close()

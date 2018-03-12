@@ -105,6 +105,7 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
         self.convertToArray()
         ranker.updateNFromComparison(self.results)
         ranker.printAll()
+        ranker.exportData()
 
 class Application(tornado.web.Application):
     def __init__(self):
