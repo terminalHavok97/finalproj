@@ -204,6 +204,7 @@ class Ranker:
     #Export a copy of the table after dividing data into seperate bins for analysis
     def exportData(self):
         file = open((str(self.fname) + str(self.w_index) + ".txt"), 'w')
+        self.w_index += 1
         for i in range(0, len(self.table)):
             for j in range(0, 4):
                 file.write(str(self.table[i][j]) + '\n')
