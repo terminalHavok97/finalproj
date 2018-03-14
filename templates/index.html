@@ -217,7 +217,7 @@
           repetitions: tests,
           on_load: function () {
             if (strikes >= max_strikes) {
-              timeline.push(debrief_block);
+              console.log("Aborting test loop");
               jsPsych.finishTrial();
             }
           }
@@ -228,10 +228,9 @@
           type: "html-keyboard-response",
           stimulus: "<p>Thank you for your time. Experiment complete</p>",
           on_load: function() {
-            printAllResults();
             //Send results, and shut websocket once they're all sent
-
             if (strikes < max_strikes) {
+              printAllResults();
               if (sendResults() == 0) {
                 console.log("Closing websocket");
                 ws.close();
