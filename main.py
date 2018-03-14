@@ -32,6 +32,7 @@ try:
     import tornado.websocket
     import tornado.httpserver
     import tornado.ioloop
+    from random import shuffle
     from rank import Ranker
     from sentence import Sentencer
 except ImportError:
@@ -53,8 +54,9 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
         fish = sGen.fishify(fish_length)
         self.pairs.extend(fish)
         l = len(self.pairs)
+        shuffle(self.pairs)
 
-        #Send order
+        #Send order:
         #No tests for init
         #ID of sen1
         #Data of sen1

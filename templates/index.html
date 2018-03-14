@@ -27,6 +27,7 @@
       var tests = -1;
       var c = 0; //How many tests have run
       var fish = [];
+      var f = false;
 
       ws = new WebSocket("ws://localhost:5000/websocket");
 
@@ -64,9 +65,9 @@
         }
 
         if (test_pairs.length >= (tests - 1)) {
-          //Check if any pairs in test_pairs have the word "fish" in them
+          //Check if any pairs in test_pairs have the id for fish in them
           for (var i=0; i<test_pairs.length; i++) {
-            if (test_pairs[i][0] == -1) {
+            if (test_pairs[i][0] == "-1") {
               console.log("Fish at test: " + i);
               fish.push(i);
             }
