@@ -49,7 +49,7 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
 
         #Get n pairs
         #TODO Upgrade to better version
-        self.pairs = ranker.pickPairsNaive(10)
+        self.pairs = ranker.pickPairsNaive(20)
         fish_length = int(len(self.pairs) * 0.1)
         fish = sGen.fishify(fish_length)
         self.pairs.extend(fish)
