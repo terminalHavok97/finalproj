@@ -6,13 +6,22 @@
   <script type="text/javascript" src="jspsych-6.0.1/plugins/jspsych-html-keyboard-response.js"></script>
   <link href="jspsych-6.0.1/css/jspsych.css" rel="stylesheet" type="text/css"></link>
   <style type="text/css">
-    #remaning {
+    #remaning-right {
       position: relative;
     }
-    #remaining p {
+    #remaining-right p {
       position: absolute;
       top: 5%;
       right: 10%;
+      font-size: 24px;
+    }
+    #remaning-left {
+      position: relative;
+    }
+    #remaining-left p {
+      position: absolute;
+      top: 5%;
+      left: 10%;
       font-size: 24px;
     }
   </style>
@@ -28,6 +37,8 @@
       var c = 0; //How many tests have run
       var fish = [];
       var f = false;
+      var strikes = 0;
+      var max_strikes;
 
       ws = new WebSocket("ws://localhost:5000/websocket");
 
@@ -72,8 +83,9 @@
               fish.push(i);
             }
           }
+          //Set max_strikes to the number of fish in the test (null counts as a strike)
+          max_strikes = fish.length;
           //Get first index, then start experiment
-          //index = getNewIndex();
           index = 0;
           runExp();
         }
@@ -141,8 +153,8 @@
           choices: [65, 68, 70],
           data: jsPsych.timelineVariable('data'),
           stimulus: function() {
-            printAllPairs();
-            var result = "<div id=\"remaining\"><p>" + c + "/" + tests + "</p></div><h2>" + test_pairs[index][1] + "</h2><h2>" + test_pairs[index][3] + "</h2>";
+            var result = "<div id=\"remaining-right\"><p>" + c +
+              "/" + tests + "</p></div><div id=\"remaining-left\"><p>Strikes:" + strikes + "/" + max_strikes + "</p></div><h2>" + test_pairs[index][1] + "</h2><h2>" + test_pairs[index][3] + "</h2>";
             return result;
           },
           prompt: "<p>Which sounds more normal?</p><p>Press a for choice 1, Press d for choice 2</p>",
@@ -164,62 +176,69 @@
             var key = data.key_press;
             var isFish = isFish(index);
             console.log("isFish = " + isFish);
-            if (key == null) {
+            if (key != 70 && key != 68 && key != 65) {
               //Just returns nothing - draw case. TODO Improve?
-              console.log("NULL CASE");
+              console.log("NULL detected");
+              strikes++;
             }
             else {
               if (isFish == true) {
                 if (key == 70) {
                   console.log("Fish detected");
-                  //removeTest(index);
-                  c++;
                 }
                 else {
                   console.log("You failed to detect the fish!");
-                  tests = tests + 100;
+                  strikes++;
                 }
               }
               else {
                 if (key == 65) {
                   results.push(test_pairs[index][0]);
                   results.push(test_pairs[index][2]);
-                  //removeTest(index);
-                  c++;
                 }
                 else if (key == 68) {
                   results.push(test_pairs[index][2]);
                   results.push(test_pairs[index][0]);
-                  //removeTest(index);
-                  c++;
                 }
                 else if (key == 70) {
                   console.log("You incorrectly detected the fish");
-                  tests = tests + 100;
+                  strikes++;
                 }
               }
-              //index = getNewIndex();
-              index++;
             }
+            c++;
+            index++;
           }
         };
 
         var test_procedure = {
           timeline: [test_block],
           randomize_order: false,
-          repetitions: tests //TODO Fix so it supports more repetitions and do-overs
+          repetitions: tests,
+          on_load: function () {
+            if (strikes >= max_strikes) {
+              timeline.push(debrief_block);
+              jsPsych.finishTrial();
+            }
+          }
         };
         timeline.push(test_procedure);
-fish
+
         var debrief_block = {
           type: "html-keyboard-response",
           stimulus: "<p>Thank you for your time. Experiment complete</p>",
           on_load: function() {
             printAllResults();
             //Send results, and shut websocket once they're all sent
-            if (sendResults() == 0) {
-              console.log("Closing websocket");
-              ws.close();
+
+            if (strikes < max_strikes) {
+              if (sendResults() == 0) {
+                console.log("Closing websocket");
+                ws.close();
+              }
+            }
+            else {
+              console.log("Data NOT sent - strike limit reached");
             }
           },
           on_finish: function() {
