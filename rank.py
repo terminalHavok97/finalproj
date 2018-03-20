@@ -48,16 +48,18 @@ class Ranker:
 
     #Print everything in the table
     def printAll(self):
-        print "==================="
-        print "ID == Data == Rank == Comparisons"
+        print "======================"
+        print "ID == Data == Rank == Comparisons == Interest"
         print ""
         for i in self.table:
             print i[0], i[1], i[2], i[3], i[4]
 
         print ""
-        print "==================="
+        print "======================"
         print "Total elems in table = ", self.t_index
-        print ""
+        print "Total plays of elems = ", self.plays
+        print "Selection threshhold = ", (self.t_index * 10)
+        print "======================\n"
 
     #Search table for data matching param data and return its id
     #-1 indicates not found, error thrown if multiple entries
@@ -134,11 +136,6 @@ class Ranker:
     def updateInterestScores(self):
         ranks = self.__returnSortedRanks()
 
-        print "DEBUG PRE UPDATE"
-        for i in ranks:
-            print i
-        print "\n"
-
         for i in range(0, len(ranks)):
             if (i == 0):
                 self.table[i][4] = abs(ranks[i][1] - ranks[i+1][1]) * 2.0
@@ -147,11 +144,6 @@ class Ranker:
             else:
                 self.table[i][4] += abs(ranks[i][1] - ranks[i+1][1])
                 self.table[i][4] += abs(ranks[i][1] - ranks[i-1][1])
-
-        print "DEBUG POST UPDATE"
-        for i in self.table:
-            print i[0], i[2], i[4]
-        print "\n"
 
     #Returns two distinct random sentences
     def __find2Random(self):
@@ -242,19 +234,14 @@ class Ranker:
             count = 0
             while True:
                 r = random.uniform(0, total_sum)
-                print "R1 " + str(r)
                 l1 = self.__returnIDFromRandomWeighting(r)
                 r = random.uniform(0, total_sum)
-                print "R2 " + str(r)
                 l2 = self.__returnIDFromRandomWeighting(r)
-
-                print "DEBUG[" + str(count) + "]: " + str(len(pairs))
 
                 check = True
                 if (len(pairs) > 0):
                     for i in range(0, len(pairs)): #Is this pairing already in our pairs list?
                         if (((l1 == pairs[i][0]) and (l2 == pairs[i][1])) or ((l2 == pairs[i][0]) and (l1 == pairs[i][1]))):
-                            print "CHECK FAILED"
                             check = False
                             break
 
@@ -273,16 +260,13 @@ class Ranker:
 
     #Choose the n most interesting pairs
     def pickPairs(self, n):
-
         #Print out ranks
         ranks = self.__returnSortedRanks()
 
         pairs = []
         #If there have been at least t_index * 10 comparisons
         #   pick the two least played sentences
-        #if (self.plays >= self.t_index * 10): #TODO Change so least played happens first
-        print "PLAYS " + str(self.plays)
-        if (self.plays == 0):
+        if (self.plays <= self.t_index * 10):
             for i in range(0, n):
                 pairs.append(self.__find2LeastPlayed())
                 self.table[pairs[i][0]][3] += 1 #Artifically boost plays
@@ -293,18 +277,8 @@ class Ranker:
                 self.table[p[1]][3] -= 1
 
         else: #Afterwards, pick pairs based on how many similar neighbours they have
-            self.printAll()
             self.updateInterestScores()
-            self.printAll()
-            print "DEBUG START"
             pairs = self.__findNMostInteresting(n)
-
-            #TODO remove
-            print "Pairs:"
-            for i in pairs:
-                print i
-            print ""
-
 
         return pairs
 
@@ -312,10 +286,6 @@ class Ranker:
         #After n plays, each sentence will be able to be pruned if in the
         # bottom n % of the table -- That'll probs be 2nd STDEV
         print "PRUNE"
-
-    #Save a copy of table in the logs dir
-    def saveTable(self):
-        return True
 
     #Export a copy of the table after dividing data into seperate bins for analysis
     def exportData(self):

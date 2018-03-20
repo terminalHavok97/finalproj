@@ -46,7 +46,6 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
         print "Websocket connected"
 
         #Get n pairs
-        #TODO Upgrade to better version
         self.pairs = ranker.pickPairs(10)
         fish_length = int(len(self.pairs) * 0.1)
         fish = sGen.fishify(fish_length)
@@ -85,7 +84,6 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
                 index += 1
         print "Test data sent\n"
 
-    #TODO Check that only non-fish and non-null messages are added to table, and that the right number always come back
     def on_message(self, msg):
         self.raw.append(int(msg))
         #print msg
@@ -105,8 +103,8 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
         self.convertToArray()
         ranker.updateNFromComparison(self.results)
         print "Table updated\n"
-        #ranker.printAll()
-        #ranker.exportData()
+        ranker.printAll()
+        ranker.exportData()
 
 class Application(tornado.web.Application):
     def __init__(self):
