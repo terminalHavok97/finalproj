@@ -2,8 +2,6 @@
 #Tom Vaughan - tv15461
 
 #TODO Look at pruning out some bad sentences
-#TODO Attention trap - Every n sentences, do something weird requiring a 3rd type
-# of key press. Could do a fish sentence?
 #TODO Add rank element based on a gaussian, so matching isn't just based
 # on least played
 #TODO Make GUI class for word matching - only eeg needs to be audio only
@@ -49,7 +47,7 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
 
         #Get n pairs
         #TODO Upgrade to better version
-        self.pairs = ranker.pickPairsNaive(20)
+        self.pairs = ranker.pickPairs(10)
         fish_length = int(len(self.pairs) * 0.1)
         fish = sGen.fishify(fish_length)
         self.pairs.extend(fish)

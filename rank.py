@@ -21,6 +21,7 @@ class Ranker:
         self.t_index = 0
         self.fname = 'output/table'
         self.w_index = 0
+        self.plays = 0
 
     #Add sentence to table
     def addToTable(self, data):
@@ -106,6 +107,8 @@ class Ranker:
         self.table[ID1][2] = rank1
         self.table[ID2][2] = rank2
 
+        self.plays += 1
+
     #Update n comparisons into the table where each elem is an array with two elements.
     #In 2nd array, 0th index is ID of victor, 1st index is ID of loser
     def updateNFromComparison(self, array):
@@ -159,6 +162,9 @@ class Ranker:
         result.append(l2[0])
         return result
 
+    def __find2MostInteresting(self):
+        return False
+
     #A naive implementation for pair picking relying only on __find2LeastPlayed
     def pickPairsNaive(self, n):
         pairs = []
@@ -176,21 +182,14 @@ class Ranker:
 
     #Choose the n most interesting pairs
     def pickPairs(self, n):
-        #Assign an interestingness score to each sentence
-        #Will then pick pairs which are (mostly) close to each other in this score
-        result = []
-        l1 = None
-        l2 = None
-        score = []
+        pairs = []
+        #If there have been at least t_index * 10 comparisons
+        if (self.plays >= self.t_index * 10):
+            pairs = self.pickPairsNaive(n)
+        else: #Otherwise, just find least played
+            pairs = self.pickPairsNaive(n)
 
-        for i in self.table:
-            #TODO See just how good this metric is?
-            score.append((i[2] / 100.0) - (10.0 / i[3]))
-
-        #Pick top-ranked sentence
-        l1 = float("-inf")
-
-        #Pick sentence with
+        return pairs
 
     def prune(self):
         #After n plays, each sentence will be able to be pruned if in the
