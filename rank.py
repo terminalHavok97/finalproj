@@ -162,7 +162,41 @@ class Ranker:
         result.append(l2[0])
         return result
 
+    def __returnSortedRanks(self):
+        l = []
+        for i in range(0, self.t_index):
+            l.append([self.table[i][0], self.table[i][2], 0])
+
+        result = sorted(l, key=lambda x: x[1])
+
+        #for i in range(0, len(result)):
+        #    print result[i]
+
+        return result
+
     def __find2MostInteresting(self):
+        #Sort list of sentences by rank
+        #ranks[0] = id
+        #ranks[1] = rank
+        #ranks[2] = interest scores
+        ranks = self.__returnSortedRanks()
+
+        #Calculate interest scores
+        for i in range(0, len(ranks)):
+            #Look left and right
+            if (i == 0):
+                ranks[i][2] = abs(ranks[i][1] - ranks[i+1][1]) * 2.0
+            elif(i == (len(ranks) - 1)):
+                ranks[i][2] = abs(ranks[i][1] - ranks[i-1][1]) * 2.0
+            else:
+                ranks[i][2] += abs(ranks[i][1] - ranks[i+1][1])
+                ranks[i][2] += abs(ranks[i][1] - ranks[i-1][1])
+
+        print "RANKS:"
+        for i in range(0, len(ranks)):
+            print ranks[i]
+        print ""
+
         return False
 
     #A naive implementation for pair picking relying only on __find2LeastPlayed
@@ -186,8 +220,9 @@ class Ranker:
         #If there have been at least t_index * 10 comparisons
         if (self.plays >= self.t_index * 10):
             pairs = self.pickPairsNaive(n)
-        else: #Otherwise, just find least played
+        else: #Afterwards, pick pairs based on how many similar neighbours they have
             pairs = self.pickPairsNaive(n)
+            self.__find2MostInteresting()
 
         return pairs
 
