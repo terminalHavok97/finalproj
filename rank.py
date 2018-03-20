@@ -225,16 +225,41 @@ class Ranker:
             elif (i[2] == low_bound):
                 lows.append(i)
 
-        
+        if (len(lows) > 1):
+            #Pick a random l1, delete it from lows, then pick a random l2
+            j = random.randrange(0, len(lows), 1)
+            l1 = lows[j]
+            del lows[j]
+            k = random.randrange(0, len(lows), 1)
+            l2 = lows[k]
+        elif (len(lows) == 1):
+            #Set l1 as our lowest, then search for the 2nd lowest score
+            l1 = lows[0]
+            del lows[:]
+            low_bound = float("-inf")
+            for i in ranks:
+                if (ranks[2] != l1[2] and i[2] > low_bound):
+                    low_bound = i[2]
+                    del lows[:]
+                    lows.append(i)
+                elif (ranks[2] != l1[2] and i[2] == low_bound):
+                    lows.append(i)
 
+            if len(lows) > 1:
+                j = random.randrange(0, len(lows), 1)
+                l2 = lows[j]
+            elif len == 1:
+                l2 = lows[0]
+            else:
+                raise Exception("Error - Non 2nd least played row")
+        else:
+            raise Exception("Error - No least played rows")
 
+        result = []
+        result.append(l1[0])
+        result.append(l2[0])
 
-        print "RANKS:"
-        for i in range(0, len(ranks)):
-            print ranks[i]
-        print ""
-
-        return False
+        return result
 
     #A naive implementation for pair picking relying only on __find2LeastPlayed
     def pickPairsNaive(self, n):
@@ -253,6 +278,14 @@ class Ranker:
 
     #Choose the n most interesting pairs
     def pickPairs(self, n):
+
+        #Print out ranks
+        ranks = self.__returnSortedRanks()
+        print "RANKS:"
+        for i in range(0, len(ranks)):
+            print ranks[i]
+        print ""
+
         pairs = []
         #If there have been at least t_index * 10 comparisons
         #   pick the two least played sentences
@@ -272,6 +305,7 @@ class Ranker:
                 else: #Pick most interesting
                     print "Picking interesting"
                     pairs.append(self.__find2MostInteresting()) #TODO change to most interesting
+
                 self.table[pairs[i][0]][3] += 1
                 self.table[pairs[i][1]][3] += 1
                 print pairs[i]
