@@ -123,11 +123,10 @@ class Ranker:
     #Sort the ranks in self.table into a list by rank
     #l[0] = id
     #l[1] = rank
-    #l[2] = interest score (inited to 0)
     def __returnSortedRanks(self):
         l = []
         for i in range(0, self.t_index):
-            l.append([self.table[i][0], self.table[i][2], 0])
+            l.append([self.table[i][0], self.table[i][2]])
 
         result = sorted(l, key=lambda x: x[1])
         return result
@@ -135,14 +134,24 @@ class Ranker:
     def updateInterestScores(self):
         ranks = self.__returnSortedRanks()
 
+        print "DEBUG PRE UPDATE"
+        for i in ranks:
+            print i
+        print "\n"
+
         for i in range(0, len(ranks)):
             if (i == 0):
-                self.table[i][4] = abs(ranks[i][2] - ranks[i+1][2]) * 2.0
+                self.table[i][4] = abs(ranks[i][1] - ranks[i+1][1]) * 2.0
             elif(i == (len(ranks) - 1)):
-                self.table[i][4] = abs(ranks[i][2] - ranks[i-1][2]) * 2.0
+                self.table[i][4] = abs(ranks[i][1] - ranks[i-1][1]) * 2.0
             else:
-                self.table[i][4] += abs(ranks[i][2] - ranks[i+1][2])
-                self.table[i][4] += abs(ranks[i][2] - ranks[i-1][2])
+                self.table[i][4] += abs(ranks[i][1] - ranks[i+1][1])
+                self.table[i][4] += abs(ranks[i][1] - ranks[i-1][1])
+
+        print "DEBUG POST UPDATE"
+        for i in self.table:
+            print i[0], i[2], i[4]
+        print "\n"
 
     #Returns two distinct random sentences
     def __find2Random(self):
@@ -233,24 +242,33 @@ class Ranker:
             count = 0
             while True:
                 r = random.uniform(0, total_sum)
+                print "R1 " + str(r)
                 l1 = self.__returnIDFromRandomWeighting(r)
                 r = random.uniform(0, total_sum)
+                print "R2 " + str(r)
                 l2 = self.__returnIDFromRandomWeighting(r)
 
+                print "DEBUG[" + str(count) + "]: " + str(len(pairs))
+
                 check = True
-                for i in range(0, len(pairs)): #Is this pairing already in our pairs list?
-                    if (((l1 == pairs[i][0]) and (l2 == pairs[i][1])) or ((l2 == pairs[i][0]) and (l1 == pairs[i][1]))):
-                        check = False
+                if (len(pairs) > 0):
+                    for i in range(0, len(pairs)): #Is this pairing already in our pairs list?
+                        if (((l1 == pairs[i][0]) and (l2 == pairs[i][1])) or ((l2 == pairs[i][0]) and (l1 == pairs[i][1]))):
+                            print "CHECK FAILED"
+                            check = False
+                            break
+
+                    if (l1 != l2 and check == True): #Is this pair valid?
                         break
 
-                if (l1 != l2 and check == True): #Is this pair valid?
+                    if (count >= 1000):
+                        raise Exception("Error - Failed to break out of while loop when finding N most interesting")
+                    count += 1
+                else:
                     break
 
-                if (count >= 1000):
-                    raise Exception("Error - Failed to break out of while loop when finding N most interesting")
-                count += 1
-
             pairs.append([l1, l2])
+            print ""
         return pairs
 
     #Choose the n most interesting pairs
@@ -258,15 +276,13 @@ class Ranker:
 
         #Print out ranks
         ranks = self.__returnSortedRanks()
-        print "RANKS:"
-        for i in range(0, len(ranks)):
-            print ranks[i]
-        print ""
 
         pairs = []
         #If there have been at least t_index * 10 comparisons
         #   pick the two least played sentences
-        if (self.plays >= self.t_index * 10): #TODO Change so least played happens first
+        #if (self.plays >= self.t_index * 10): #TODO Change so least played happens first
+        print "PLAYS " + str(self.plays)
+        if (self.plays == 0):
             for i in range(0, n):
                 pairs.append(self.__find2LeastPlayed())
                 self.table[pairs[i][0]][3] += 1 #Artifically boost plays
@@ -277,7 +293,10 @@ class Ranker:
                 self.table[p[1]][3] -= 1
 
         else: #Afterwards, pick pairs based on how many similar neighbours they have
+            self.printAll()
             self.updateInterestScores()
+            self.printAll()
+            print "DEBUG START"
             pairs = self.__findNMostInteresting(n)
 
             #TODO remove
