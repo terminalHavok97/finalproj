@@ -14,6 +14,7 @@ class Ranker:
     #t[1] = Data (sentence)
     #t[2] = Rank
     #t[3] = Number of comparisons
+    #t[4] = Interest score
 
     #Initialise table
     def __init__(self):
@@ -25,7 +26,7 @@ class Ranker:
 
     #Add sentence to table
     def addToTable(self, data):
-        l = [self.t_index, data, 1000.0, 0]
+        l = [self.t_index, data, 1000.0, 0, 0]
         self.table.append(l)
         self.t_index += 1
 
@@ -51,7 +52,7 @@ class Ranker:
         print "ID == Data == Rank == Comparisons"
         print ""
         for i in self.table:
-            print i[0], i[1], i[2], i[3]
+            print i[0], i[1], i[2], i[3], i[4]
 
         print ""
         print "==================="
@@ -81,6 +82,10 @@ class Ranker:
     #Get comparions from ID
     def getComp(self, ID):
         return self.table[ID][3]
+
+    #Get interest score from ID
+    def getIntrestScore(self, ID):
+        return self.table[ID][4]
 
     #Get K value (can be changed later)
     def __getKValue(self, ID):
@@ -126,6 +131,18 @@ class Ranker:
 
         result = sorted(l, key=lambda x: x[1])
         return result
+
+    def updateInterestScores(self):
+        ranks = self.__returnSortedRanks()
+
+        for i in range(0, len(ranks)):
+            if (i == 0):
+                self.table[i][4] = abs(ranks[i][2] - ranks[i+1][2]) * 2.0
+            elif(i == (len(ranks) - 1)):
+                self.table[i][4] = abs(ranks[i][2] - ranks[i-1][2]) * 2.0
+            else:
+                self.table[i][4] += abs(ranks[i][2] - ranks[i+1][2])
+                self.table[i][4] += abs(ranks[i][2] - ranks[i-1][2])
 
     #Returns two distinct random sentences
     def __find2Random(self):
@@ -193,14 +210,14 @@ class Ranker:
         result.append(l2[0])
         return result
 
-    def __find2MostInteresting(self):
+    def __find2MostInteresting(self, pairs):
         #Sort list of sentences by rank
         #ranks[0] = id
         #ranks[1] = rank
         #ranks[2] = interest scores
-        ranks = self.__returnSortedRanks()
+        '''ranks = self.__returnSortedRanks()
 
-        #Calculate interest scores
+        #Calculate interest scores TODO Move this to self.table, this being recalced
         for i in range(0, len(ranks)):
             #Look left and right
             if (i == 0):
@@ -209,13 +226,23 @@ class Ranker:
                 ranks[i][2] = abs(ranks[i][1] - ranks[i-1][1]) * 2.0
             else:
                 ranks[i][2] += abs(ranks[i][1] - ranks[i+1][1])
-                ranks[i][2] += abs(ranks[i][1] - ranks[i-1][1])
+                ranks[i][2] += abs(ranks[i][1] - ranks[i-1][1])'''
 
-        #Pick two most interesting examples
+        #Pick two most interesting examples that aren't already taken
         low_bound = float("-inf")
         lows = []
         l1 = None
         l2 = None
+
+
+        #TODO Add checks to make sure we get good examples that aren't just the
+        #   same 2 sentences
+
+
+
+
+
+
 
         #Find list of joint-lowest interest scores
         for i in ranks:
@@ -277,6 +304,7 @@ class Ranker:
         return pairs
 
     #Choose the n most interesting pairs
+    #TODO Add dulplication check?
     def pickPairs(self, n):
 
         #Print out ranks
@@ -289,7 +317,7 @@ class Ranker:
         pairs = []
         #If there have been at least t_index * 10 comparisons
         #   pick the two least played sentences
-        if (self.plays >= self.t_index * 10): #TODO Change so least played happens first
+        if (self.plays <= self.t_index * 10): #TODO Change so least played happens first
             for i in range(0, n):
                 pairs.append(self.__find2LeastPlayed())
                 self.table[pairs[i][0]][3] += 1
@@ -297,6 +325,7 @@ class Ranker:
 
         else: #Afterwards, pick pairs based on how many similar neighbours they have
             #1 in 10 times, pick pairs randomly
+            self.updateInterestScores()
             for i in range(0, n):
                 r = random.randrange(0, 10, 1)
                 if (r == 0): #Pick random
@@ -304,7 +333,7 @@ class Ranker:
                     pairs.append(self.__find2Random())
                 else: #Pick most interesting
                     print "Picking interesting"
-                    pairs.append(self.__find2MostInteresting()) #TODO change to most interesting
+                    pairs.append(self.__find2MostInteresting(pairs)) #TODO change to most interesting
 
                 self.table[pairs[i][0]][3] += 1
                 self.table[pairs[i][1]][3] += 1
