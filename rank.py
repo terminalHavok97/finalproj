@@ -115,6 +115,37 @@ class Ranker:
         for i in array:
             self.updateFromComparison(i[0], i[1])
 
+    #Sort the ranks in self.table into a list by rank
+    #l[0] = id
+    #l[1] = rank
+    #l[2] = interest score (inited to 0)
+    def __returnSortedRanks(self):
+        l = []
+        for i in range(0, self.t_index):
+            l.append([self.table[i][0], self.table[i][2], 0])
+
+        result = sorted(l, key=lambda x: x[1])
+        return result
+
+    #Returns two distinct random sentences
+    def __find2Random(self):
+        counter = 0
+        l1 = self.table[random.randrange(0, len(self.table), 1)][0]
+        l2 = self.table[random.randrange(0, len(self.table), 1)][0]
+
+        while ((l1 == l2) and (counter < 1000)):
+            l1 = self.table[random.randrange(0, len(self.table), 1)][0]
+            l2 = self.table[random.randrange(0, len(self.table), 1)][0]
+            counter += 1
+
+        if (counter >= 1000):
+            raise Exception("Error - Can't pick two random sentences from table")
+
+        result = []
+        result.append(l1)
+        result.append(l2)
+        return result
+
     #Returns the 2 least played sentences
     def __find2LeastPlayed(self):
         low_bound = float("inf")
@@ -162,18 +193,6 @@ class Ranker:
         result.append(l2[0])
         return result
 
-    def __returnSortedRanks(self):
-        l = []
-        for i in range(0, self.t_index):
-            l.append([self.table[i][0], self.table[i][2], 0])
-
-        result = sorted(l, key=lambda x: x[1])
-
-        #for i in range(0, len(result)):
-        #    print result[i]
-
-        return result
-
     def __find2MostInteresting(self):
         #Sort list of sentences by rank
         #ranks[0] = id
@@ -192,6 +211,24 @@ class Ranker:
                 ranks[i][2] += abs(ranks[i][1] - ranks[i+1][1])
                 ranks[i][2] += abs(ranks[i][1] - ranks[i-1][1])
 
+        #Pick two most interesting examples
+        low_bound = float("-inf")
+        lows = []
+        l1 = None
+        l2 = None
+
+        #Find list of joint-lowest interest scores
+        for i in ranks:
+            if (i[2] > low_bound):
+                low_bound = i[2]
+                del lows[:]
+            elif (i[2] == low_bound):
+                lows.append(i)
+
+        
+
+
+
         print "RANKS:"
         for i in range(0, len(ranks)):
             print ranks[i]
@@ -208,7 +245,7 @@ class Ranker:
             self.table[pairs[i][0]][3] += 1
             self.table[pairs[i][1]][3] += 1
 
-        for p in pairs:
+        for p in pairs: #TODO WTF???
             self.table[p[0]][3] -= 1
             self.table[p[1]][3] -= 1
 
@@ -218,11 +255,26 @@ class Ranker:
     def pickPairs(self, n):
         pairs = []
         #If there have been at least t_index * 10 comparisons
-        if (self.plays >= self.t_index * 10):
-            pairs = self.pickPairsNaive(n)
+        #   pick the two least played sentences
+        if (self.plays >= self.t_index * 10): #TODO Change so least played happens first
+            for i in range(0, n):
+                pairs.append(self.__find2LeastPlayed())
+                self.table[pairs[i][0]][3] += 1
+                self.table[pairs[i][1]][3] += 1
+
         else: #Afterwards, pick pairs based on how many similar neighbours they have
-            pairs = self.pickPairsNaive(n)
-            self.__find2MostInteresting()
+            #1 in 10 times, pick pairs randomly
+            for i in range(0, n):
+                r = random.randrange(0, 10, 1)
+                if (r == 0): #Pick random
+                    print "Picking random"
+                    pairs.append(self.__find2Random())
+                else: #Pick most interesting
+                    print "Picking interesting"
+                    pairs.append(self.__find2MostInteresting()) #TODO change to most interesting
+                self.table[pairs[i][0]][3] += 1
+                self.table[pairs[i][1]][3] += 1
+                print pairs[i]
 
         return pairs
 
