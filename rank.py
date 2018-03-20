@@ -210,101 +210,50 @@ class Ranker:
         result.append(l2[0])
         return result
 
-    def __find2MostInteresting(self, pairs):
-        #Sort list of sentences by rank
-        #ranks[0] = id
-        #ranks[1] = rank
-        #ranks[2] = interest scores
-        '''ranks = self.__returnSortedRanks()
-
-        #Calculate interest scores TODO Move this to self.table, this being recalced
-        for i in range(0, len(ranks)):
-            #Look left and right
-            if (i == 0):
-                ranks[i][2] = abs(ranks[i][1] - ranks[i+1][1]) * 2.0
-            elif(i == (len(ranks) - 1)):
-                ranks[i][2] = abs(ranks[i][1] - ranks[i-1][1]) * 2.0
+    def __returnIDFromRandomWeighting(self, r):
+        total = 0
+        for i in range(0, self.t_index):
+            this = self.table[i][4]
+            if (r >= total and r <= (total + this)):
+                return self.table[i][0]
             else:
-                ranks[i][2] += abs(ranks[i][1] - ranks[i+1][1])
-                ranks[i][2] += abs(ranks[i][1] - ranks[i-1][1])'''
+                total += this
+        raise Exception("Error - Random weight couldn't be found in table")
 
-        #Pick two most interesting examples that aren't already taken
-        low_bound = float("-inf")
-        lows = []
-        l1 = None
-        l2 = None
+    def __findNMostInteresting(self, n):
+        #1  Sum all the intrest scores
+        total_sum = 0
+        for i in self.table:
+            total_sum += i[4]
 
-
-        #TODO Add checks to make sure we get good examples that aren't just the
-        #   same 2 sentences
-
-
-
-
-
-
-
-        #Find list of joint-lowest interest scores
-        for i in ranks:
-            if (i[2] > low_bound):
-                low_bound = i[2]
-                del lows[:]
-            elif (i[2] == low_bound):
-                lows.append(i)
-
-        if (len(lows) > 1):
-            #Pick a random l1, delete it from lows, then pick a random l2
-            j = random.randrange(0, len(lows), 1)
-            l1 = lows[j]
-            del lows[j]
-            k = random.randrange(0, len(lows), 1)
-            l2 = lows[k]
-        elif (len(lows) == 1):
-            #Set l1 as our lowest, then search for the 2nd lowest score
-            l1 = lows[0]
-            del lows[:]
-            low_bound = float("-inf")
-            for i in ranks:
-                if (ranks[2] != l1[2] and i[2] > low_bound):
-                    low_bound = i[2]
-                    del lows[:]
-                    lows.append(i)
-                elif (ranks[2] != l1[2] and i[2] == low_bound):
-                    lows.append(i)
-
-            if len(lows) > 1:
-                j = random.randrange(0, len(lows), 1)
-                l2 = lows[j]
-            elif len == 1:
-                l2 = lows[0]
-            else:
-                raise Exception("Error - Non 2nd least played row")
-        else:
-            raise Exception("Error - No least played rows")
-
-        result = []
-        result.append(l1[0])
-        result.append(l2[0])
-
-        return result
-
-    #A naive implementation for pair picking relying only on __find2LeastPlayed
-    def pickPairsNaive(self, n):
+        #2  Pick a random pair with each sentence choice weighted by the interest scores
+        #3  Check that choosen pair falls within constraints of stuff already picked
         pairs = []
-
         for i in range(0, n):
-            pairs.append(self.__find2LeastPlayed())
-            self.table[pairs[i][0]][3] += 1
-            self.table[pairs[i][1]][3] += 1
+            count = 0
+            while True:
+                r = random.uniform(0, total_sum)
+                l1 = self.__returnIDFromRandomWeighting(r)
+                r = random.uniform(0, total_sum)
+                l2 = self.__returnIDFromRandomWeighting(r)
 
-        for p in pairs: #TODO WTF???
-            self.table[p[0]][3] -= 1
-            self.table[p[1]][3] -= 1
+                check = True
+                for i in range(0, len(pairs)): #Is this pairing already in our pairs list?
+                    if (((l1 == pairs[i][0]) and (l2 == pairs[i][1])) or ((l2 == pairs[i][0]) and (l1 == pairs[i][1]))):
+                        check = False
+                        break
 
+                if (l1 != l2 and check == True): #Is this pair valid?
+                    break
+
+                if (count >= 1000):
+                    raise Exception("Error - Failed to break out of while loop when finding N most interesting")
+                count += 1
+
+            pairs.append([l1, l2])
         return pairs
 
     #Choose the n most interesting pairs
-    #TODO Add dulplication check?
     def pickPairs(self, n):
 
         #Print out ranks
@@ -317,27 +266,26 @@ class Ranker:
         pairs = []
         #If there have been at least t_index * 10 comparisons
         #   pick the two least played sentences
-        if (self.plays <= self.t_index * 10): #TODO Change so least played happens first
+        if (self.plays >= self.t_index * 10): #TODO Change so least played happens first
             for i in range(0, n):
                 pairs.append(self.__find2LeastPlayed())
-                self.table[pairs[i][0]][3] += 1
+                self.table[pairs[i][0]][3] += 1 #Artifically boost plays
                 self.table[pairs[i][1]][3] += 1
+
+            for p in pairs: #Reset plays
+                self.table[p[0]][3] -= 1
+                self.table[p[1]][3] -= 1
 
         else: #Afterwards, pick pairs based on how many similar neighbours they have
-            #1 in 10 times, pick pairs randomly
             self.updateInterestScores()
-            for i in range(0, n):
-                r = random.randrange(0, 10, 1)
-                if (r == 0): #Pick random
-                    print "Picking random"
-                    pairs.append(self.__find2Random())
-                else: #Pick most interesting
-                    print "Picking interesting"
-                    pairs.append(self.__find2MostInteresting(pairs)) #TODO change to most interesting
+            pairs = self.__findNMostInteresting(n)
 
-                self.table[pairs[i][0]][3] += 1
-                self.table[pairs[i][1]][3] += 1
-                print pairs[i]
+            #TODO remove
+            print "Pairs:"
+            for i in pairs:
+                print i
+            print ""
+
 
         return pairs
 
