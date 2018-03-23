@@ -5,9 +5,11 @@ class Ranker:
     try:
         import random
         import os
+        import numpy as np
+        import matplotlib.pyplot as plt
     except ImportError:
         raise ImportError('<Ranker import error>')
-    global random, os
+    global random, os, np, plt
 
     #TABLE DATA
     #t[0] = ID
@@ -15,6 +17,7 @@ class Ranker:
     #t[2] = Rank
     #t[3] = Number of comparisons
     #t[4] = Interest score
+    #t[5] = Bin
 
     #Initialise table
     def __init__(self):
@@ -26,7 +29,7 @@ class Ranker:
 
     #Add sentence to table
     def addToTable(self, data):
-        l = [self.t_index, data, 1000.0, 0, 0]
+        l = [self.t_index, data, 1000.0, 0, 0, -1]
         self.table.append(l)
         self.t_index += 1
 
@@ -49,10 +52,10 @@ class Ranker:
     #Print everything in the table
     def printAll(self):
         print "======================"
-        print "ID == Data == Rank == Comparisons == Interest"
+        print "ID == Data == Rank == Comparisons == Interest == Bin"
         print ""
         for i in self.table:
-            print i[0], i[1], i[2], i[3], i[4]
+            print i[0], i[1], i[2], i[3], i[4], i[5]
 
         print ""
         print "======================"
@@ -88,6 +91,9 @@ class Ranker:
     #Get interest score from ID
     def getIntrestScore(self, ID):
         return self.table[ID][4]
+
+    def getBin(self, ID):
+        return self.table[ID][5]
 
     #Get K value (can be changed later)
     def __getKValue(self, ID):
@@ -221,7 +227,7 @@ class Ranker:
                 total += this
         raise Exception("Error - Random weight couldn't be found in table")
 
-    def __findNMostInteresting(self, n):
+    def __findNMostClustered(self, n):
         #1  Sum all the intrest scores
         total_sum = 0
         for i in self.table:
@@ -278,7 +284,7 @@ class Ranker:
 
         else: #Afterwards, pick pairs based on how many similar neighbours they have
             self.updateInterestScores()
-            pairs = self.__findNMostInteresting(n)
+            pairs = self.__findNMostClustered(n)
 
         return pairs
 
@@ -287,12 +293,63 @@ class Ranker:
         # bottom n % of the table -- That'll probs be 2nd STDEV
         print "PRUNE"
 
+    #Returns a list containing the highest rank in the table and the lowest
+    def __getHighestAndLowestRank(self):
+        result = [float("-inf"), float("inf")]
+        for i in self.table:
+            if (i[2] > result[0]):
+                result[0] = i[2]
+            if (i[2] < result[1]):
+                result[1] = i[2]
+        return result
+
+    #Break up distribtion of ranks into evenly sized bins, then put each rank in a bin
+    def __createBins(self):
+        return False
+
+    def __findNMost(self, n):
+        return False
+
+    def exportAsGraph(self):
+        rank = []
+        index = []
+        for i in self.table:
+            rank.append(i[2])
+            index.append(i)
+        plt.plot(index, result, 'ro')
+        plt.show()
+
+    #Load a table that was previously saved into our current one
+    def importTable(self, path):
+        s = []
+        count = 0
+        f = open(path, 'r')
+        while True:
+            line = f.readline()
+            if not line: break
+            if (count == 1):
+                s.append(str(line.strip()).split())
+            else:
+                s.append(line.strip())
+
+            if (count == 5):
+                self.table.append(s)
+                count = 0
+                s = []
+            else:
+                count += 1
+        f.close()
+
     #Export a copy of the table after dividing data into seperate bins for analysis
     def exportData(self):
-        file = open((str(self.fname) + str(self.w_index) + ".txt"), 'w')
+        f = open((str(self.fname) + str(self.w_index) + ".txt"), 'w')
         self.w_index += 1
         for i in range(0, len(self.table)):
-            for j in range(0, 4):
-                file.write(str(self.table[i][j]) + '\n')
-            file.write('\n')
-        file.close()
+            for j in range(0, 5):
+                if (j == 1):
+                    for k in range(0, 4):
+                        f.write(str(self.table[i][j][k] + ' '))
+                else:
+                    f.write(str(self.table[i][j]) + '\n')
+            f.write('\n')
+        f.close()
