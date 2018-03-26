@@ -277,12 +277,42 @@ class Ranker:
             print ""
         return pairs
 
-    def findNRandomRanked(self, n):
+    def __findNRandomRanked(self, n):
         ranks = self.getAllRank()
         ranks = np.sort(ranks)
+        threshhold = np.mean(ranks) + np.std(ranks)
+        pairs = []
+        high = []
+        low = []
+
+        def addToList(pickList1, pickList2, choosenList):
+            #Choose random
+
+
+        for i in range(0, self.t_index):
+            if (i[2] >= threshhold):
+                high.append(self.table[i][0])
+            else:
+                low.append(self.table[i][0])
 
         for i in range(0, n):
-            print self.__find2Random()
+            r = random.randint(0, 4)
+            if (r == 0):
+                #2 lows
+                pairs.append(addToList(low, low, pairs))
+            elif (r == 1):
+                # l1 low, l2 high
+                pairs.append(addToList(low, high, pairs))
+            elif (r == 2):
+                # l1 high, l2 low
+                pairs.append(addToList(high, low, pairs))
+            elif (r == 3):
+                # 2 highs
+                pairs.append(addToList(high, high, pairs))
+            else:
+                raise Exception("Dice incorrecltly configured")
+
+        return pairs
 
         '''print ranks
         print np.mean(ranks)
@@ -303,7 +333,8 @@ class Ranker:
         pairs = []
         #If there have been at least t_index * 10 comparisons
         #   pick the two least played sentences
-        if (self.plays <= self.t_index * 10):
+        if (self.plays >= self.t_index * 10):
+            print "Simple pair picking"
             for i in range(0, n):
                 pairs.append(self.__find2LeastPlayed())
                 self.table[pairs[i][0]][3] += 1 #Artifically boost plays
@@ -316,7 +347,8 @@ class Ranker:
         else: #Afterwards, pick pairs based on how many similar neighbours they have
             #self.updateInterestScores()
             #pairs = self.__findNMostClustered(n)
-            pairs = self.findNRandomRanked(n)
+            print "Complex pair picking"
+            pairs = self.__findNRandomRanked(n)
 
         return pairs
 

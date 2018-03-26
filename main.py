@@ -130,8 +130,14 @@ if __name__ == '__main__':
     #ranker.addAllToTable(sen)
     ranker.importTable("test/table0.txt")
     ranker.printAll()
-    ranker.find2RandomRanked()
+    pairs = ranker.pickPairs(20)
     #ranker.exportAsGraph()
+
+    index = 0
+    for p in pairs:
+        print p[0], (' '.join(ranker.getData(p[0])))
+        print p[1], (' '.join(ranker.getData(p[1])))
+
 
     print "Starting server..."
     ws_app = Application()
