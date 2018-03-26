@@ -95,6 +95,19 @@ class Ranker:
     def getBin(self, ID):
         return self.table[ID][5]
 
+    def getAllID(self):
+        return False
+
+    def getAllData(self):
+        return False
+
+    def getAllRank(self):
+        rank = []
+        for i in range(0, self.t_index):
+            rank.append(self.table[i][2])
+
+        return rank
+
     #Get K value (can be changed later)
     def __getKValue(self, ID):
         return 32
@@ -264,6 +277,20 @@ class Ranker:
             print ""
         return pairs
 
+    def find2RandomRanked(self):
+        ranks = self.getAllRank()
+        ranks = np.sort(ranks)
+        print ranks
+        print np.mean(ranks)
+        print np.std(ranks)
+        print "====="
+        for i in ranks:
+            if (i > (np.mean(ranks) + np.std(ranks))):
+                print i
+        plt.hist(ranks)
+        plt.show()
+
+
     #Choose the n most interesting pairs
     def pickPairs(self, n):
         #Print out ranks
@@ -311,12 +338,20 @@ class Ranker:
         return False
 
     def exportAsGraph(self):
-        rank = []
-        index = []
-        for i in self.table:
-            rank.append(i[2])
-            index.append(i)
-        plt.plot(index, result, 'ro')
+        ranks = []
+        for i in range(0, self.t_index):
+            ranks.append(float(self.table[i][2]))
+
+        result = sorted(ranks)
+
+        for i in result:
+            print i
+
+        if (result[0] > result[10]):
+            print "WRONG"
+
+        #plt.plot(result, 'ro')
+        plt.hist(result, 'auto')
         plt.show()
 
     #Load a table that was previously saved into our current one
@@ -329,11 +364,14 @@ class Ranker:
             if not line: break
             if (count == 1):
                 s.append(str(line.strip()).split())
+            elif (count == 2):
+                s.append(float(line.strip()))
             else:
                 s.append(line.strip())
 
-            if (count == 5):
+            if (count == 6):
                 self.table.append(s)
+                self.t_index += 1
                 count = 0
                 s = []
             else:

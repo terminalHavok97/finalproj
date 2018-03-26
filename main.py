@@ -128,8 +128,10 @@ if __name__ == '__main__':
 
     #sen = sGen.getNSentences(20)
     #ranker.addAllToTable(sen)
-    ranker.importTable("output/table0.txt")
+    ranker.importTable("test/table0.txt")
     ranker.printAll()
+    ranker.find2RandomRanked()
+    #ranker.exportAsGraph()
 
     print "Starting server..."
     ws_app = Application()
