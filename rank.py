@@ -277,10 +277,14 @@ class Ranker:
             print ""
         return pairs
 
-    def find2RandomRanked(self):
+    def findNRandomRanked(self, n):
         ranks = self.getAllRank()
         ranks = np.sort(ranks)
-        print ranks
+
+        for i in range(0, n):
+            print self.__find2Random()
+
+        '''print ranks
         print np.mean(ranks)
         print np.std(ranks)
         print "====="
@@ -288,7 +292,7 @@ class Ranker:
             if (i > (np.mean(ranks) + np.std(ranks))):
                 print i
         plt.hist(ranks)
-        plt.show()
+        plt.show()'''
 
 
     #Choose the n most interesting pairs
@@ -310,8 +314,9 @@ class Ranker:
                 self.table[p[1]][3] -= 1
 
         else: #Afterwards, pick pairs based on how many similar neighbours they have
-            self.updateInterestScores()
-            pairs = self.__findNMostClustered(n)
+            #self.updateInterestScores()
+            #pairs = self.__findNMostClustered(n)
+            pairs = self.findNRandomRanked(n)
 
         return pairs
 
@@ -367,7 +372,9 @@ class Ranker:
             elif (count == 2):
                 s.append(float(line.strip()))
             else:
-                s.append(line.strip())
+                l = line.strip()
+                if (l != ""):
+                    s.append(int(l))
 
             if (count == 6):
                 self.table.append(s)
@@ -376,6 +383,10 @@ class Ranker:
                 s = []
             else:
                 count += 1
+
+        for i in self.table:
+            self.plays += i[3]
+
         f.close()
 
     #Export a copy of the table after dividing data into seperate bins for analysis
