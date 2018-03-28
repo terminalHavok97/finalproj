@@ -25,231 +25,224 @@
       font-size: 24px;
     }
   </style>
-  <script type=text/javascript>
-      var ws; //Websocket
-      var test_pairs = []; //2D array of pairs of tests to run
-      var results = []; //
-      var timeline = []; //jspsych variable
-      var s = [];
-      var counter = -1;
-      var index = 0;
-      var tests = -1;
-      var c = 0; //How many tests have run
-      var fish = [];
-      var f = false;
-      var strikes = 0;
-      var max_strikes;
+  <script type="text/javascript">
+    var ws; //Websocket variable
+    var test_pairs = []; //List of all pairs of sentences to be tested
+    var fish = []; //List of the locations of the fish pairs in test_pairs
+    var results = []; //List of responses
+    var tests = -1; //Global number of tests (inc fish)
+    var counter = -1; //Websocket input counter
+    var s = []; //Websocket input temp list
+    var index = 0; //Which test in test_pairs is next to be run?
+    var error_response = false; //Was the last trial response incorrect?
 
-      ws = new WebSocket("ws://localhost:5000/websocket");
+    ws = new WebSocket("ws://localhost:5000/websocket");
 
-      ws.onmessage = function(e) {
-        switch (counter) {
-          case -1:
-            tests = e.data;
-            console.log("Tests: " + tests);
-            counter++;
-            break;
-          case 0:
-            //ID1
-            s[0] = e.data;
-            counter++;
-            break;
-          case 1:
-            //Data1
-            s[1] = e.data;
-            counter++;
-            break;
-          case 2:
-            //ID2
-            s[2] = e.data;
-            counter++;
-            break;
-          case 3:
-            //Data2
-            s[3] = e.data;
-            test_pairs.push(s);
-            s = [];
-            counter = 0;
-            break;
-          default:
-            console.log("Error - Data counter error");
+    ws.onmessage = function(e) {
+      switch (counter) {
+        case -1:
+          tests = e.data;
+          console.log("Tests: " + tests);
+          counter++;
+          break;
+        case 0:
+          //ID1
+          s[0] = e.data;
+          counter++;
+          break;
+        case 1:
+          //Data1
+          s[1] = e.data;
+          counter++;
+          break;
+        case 2:
+          //ID2
+          s[2] = e.data;
+          counter++;
+          break;
+        case 3:
+          //Data2
+          s[3] = e.data;
+          test_pairs.push(s);
+          s = [];
+          counter = 0;
+          break;
+        default:
+          console.log("Error - Data counter error");
+      }
+
+      if (test_pairs.length == tests) {
+        //Check if any pairs in test_pairs have the id for fish in them
+        for (var i=0; i<test_pairs.length; i++) {
+          if (test_pairs[i][0] == "-1" && test_pairs[i][2] == "-1") {
+            console.log("Fish at test: " + i);
+            fish.push(i);
+          }
         }
+        //Set max_strikes to the number of fish in the test (null counts as a strike)
+        max_strikes = fish.length;
+        //Get first index, then start experiment
+        index = 0;
+        runExp();
+      }
+    };
+    //TODO Unsure if we need this semicolon
 
-        if (test_pairs.length == tests) {
-          //Check if any pairs in test_pairs have the id for fish in them
-          for (var i=0; i<test_pairs.length; i++) {
-            if (test_pairs[i][0] == "-1" && test_pairs[i][2] == "-1") {
-              console.log("Fish at test: " + i);
-              fish.push(i);
+    //Pick a new index contained within test_pairs
+    function getNewIndex() {
+      var l = test_pairs.length;
+      var index = Math.floor(Math.random() * l);
+      return index;
+    }
+
+    //Send results back to server via websocket
+    function sendResults() {
+      for (var i=0; i<results.length; i++) {
+        ws.send(results[i]);
+      }
+      console.log("Results all sent to server");
+      return 0
+    }
+
+    function runExp() {
+      var timeline = []; //jsPsych timeline variable
+
+
+      var welcome_block = {
+          type: "html-keyboard-response",
+          stimulus: "<h1>Welcome to the experiment. Press any key to continue</h1>"
+      };
+
+      var instructions_block = {
+        type: "html-keyboard-response",
+        stimulus: "<p>In this experiment, two sentences will appear one after " +
+              "another in the center of the screen.</p><p>You will need to " +
+              "compare them, and choose which one sounds more <strong>" +
+              "normal</strong> in everyday speech.</p><p>If you think " +
+              "the first sentence is more normal, press the <strong>A" +
+              "</strong> button</p><p>If you think the second sentence is " +
+              "more normal, press the <strong>D</strong> button</p>" +
+              "<p>If the sentence contains the word <strong>\"fish\"</strong>" +
+              ", then press the <strong>F</strong> key</p>" +
+              "<p>You will only have 5 seconds to answer</p>" +
+              "<p>Press any key to being<p>",
+        post_trial_gap: 2000
+      };
+
+      var test_procedure = {
+        type: "html-keyboard-response",
+        trial_duration: 15000,
+        response_ends_trial: true,
+        choices: [65, 68, 70],
+        stimulus: function() {
+          return "<div id=\"remaining-right\"><p>" + index +
+            "/" + tests + "</p></div><h2>" + test_pairs[index][1] +
+            "</h2><h2>" + test_pairs[index][3] + "</h2>";
+        },
+        prompt: "<p>Which sounds more normal?</p><p>Press a for choice 1, Press d for choice 2</p>",
+        data: jsPsych.timelineVariable('data'),
+        on_finish: function(data) {
+          function isFish(index) {
+            for (var i=0; i<fish.length; i++) {
+              if (fish[i] == index) {
+                return true;
+              }
+            }
+            return false;
+          }
+
+          var key = data.key_press;
+          var isFish = isFish(index);
+          error_response = false;
+
+          if (key != 70 && key != 68 && key != 65) {
+            console.log("NULL detected");
+            error_response = true;
+          }
+          else {
+            if (isFish == true) {
+              if (key == 70) {
+                console.log("Fish detected");
+              }
+              else {
+                console.log("You failed to detect the fish!");
+                error_response = true;
+              }
+            }
+            else {
+              if (key == 65) {
+                results.push(test_pairs[index][0]);
+                results.push(test_pairs[index][2]);
+              }
+              else if (key == 68) {
+                results.push(test_pairs[index][2]);
+                results.push(test_pairs[index][0]);
+              }
+              else if (key == 70) {
+                console.log("You incorrectly detected the fish");
+                error_response = true;
+              }
             }
           }
-          //Set max_strikes to the number of fish in the test (null counts as a strike)
-          max_strikes = fish.length;
-          //Get first index, then start experiment
-          index = 0;
-          runExp();
+          index++;
         }
       };
 
-      function getNewIndex() {
-        var l = test_pairs.length;
-        var index = Math.floor(Math.random() * l);
-        return index;
-      }
+      var fail_procedure = {
+        type: "html-keyboard-response",
+        trial_duration: 3000,
+        stimulus: "<h1>INCORRECT RESPONSE, PLEASE TRY AGAIN</h1>"
+      };
 
-      function printAllPairs() {
-        console.log("++++++++++++++++++++++++++++++++++++++");
-        for (i=0; i<test_pairs.length; i++) {
-          console.log("ID[" + i + "] " + test_pairs[i][0] + " " + test_pairs[i][1]);
-          console.log("ID[" + i + "] " + test_pairs[i][2] + " " + test_pairs[i][3]);
-          console.log("++++++++++++++++++++++++++++++++++++++");
-        }
-        console.log("");
-      }
-
-      function printAllResults() {
-        console.log("Results:");
-        for (var i=0; i<results.length; i++) {
-          console.log(results[i]);
-        }
-      }
-
-      function sendResults() {
-        for (var i=0; i<results.length; i++) {
-          ws.send(results[i]);
-        }
-        console.log("Results all sent to server");
-        return 0
-      }
-
-      function runExp() {
-        var welcome_block = {
-            type: "html-keyboard-response",
-            stimulus: "<h1>Welcome to the experiment. Press any key to continue</h1>"
-        };
-        timeline.push(welcome_block);
-
-        var instructions_block = {
-          type: "html-keyboard-response",
-          stimulus: "<p>In this experiment, two sentences will appear one after " +
-                "another in the center of the screen.</p><p>You will need to " +
-                "compare them, and choose which one sounds more <strong>" +
-                "normal</strong> in everyday speech.</p><p>If you think " +
-                "the first sentence is more normal, press the <strong>A" +
-                "</strong> button</p><p>If you think the second sentence is " +
-                "more normal, press the <strong>D</strong> button</p>" +
-                "<p>If the sentence contains the word <strong>\"fish\"</strong>" +
-                ", then press the <strong>F</strong> key</p>" +
-                "<p>You will only have 5 seconds to answer</p>" +
-                "<p>Press any key to being<p>",
-          post_trial_gap: 2000
-        };
-        timeline.push(instructions_block);
-
-        var test_block = {
-          type: "html-keyboard-response",
-          trial_duration: 10000,
-          response_ends_trial: true,
-          choices: [65, 68, 70],
-          data: jsPsych.timelineVariable('data'),
-          stimulus: function() {
-            var result = "<div id=\"remaining-right\"><p>" + c +
-              "/" + tests + "</p></div><div id=\"remaining-left\"><p>Strikes:" + strikes + "/" + max_strikes + "</p></div><h2>" + test_pairs[index][1] + "</h2><h2>" + test_pairs[index][3] + "</h2>";
-            return result;
-          },
-          prompt: "<p>Which sounds more normal?</p><p>Press a for choice 1, Press d for choice 2</p>",
-          on_finish: function(data) {
-            function removeTest(index) {
-              test_pairs.splice(index, 1);
-            }
-
-            function isFish(index) {
-              for (var i=0; i<fish.length; i++) {
-                //console.log("Fish at: " + fish[i]);
-                if (fish[i] == index) {
-                  return true;
-                }
-              }
-              return false;
-            }
-
-            var key = data.key_press;
-            var isFish = isFish(index);
-            console.log("isFish = " + isFish);
-            if (key != 70 && key != 68 && key != 65) {
-              //Just returns nothing - draw case. TODO Improve?
-              console.log("NULL detected");
-              strikes++;
-            }
-            else {
-              if (isFish == true) {
-                if (key == 70) {
-                  console.log("Fish detected");
-                }
-                else {
-                  console.log("You failed to detect the fish!");
-                  strikes++;
-                }
-              }
-              else {
-                if (key == 65) {
-                  results.push(test_pairs[index][0]);
-                  results.push(test_pairs[index][2]);
-                }
-                else if (key == 68) {
-                  results.push(test_pairs[index][2]);
-                  results.push(test_pairs[index][0]);
-                }
-                else if (key == 70) {
-                  console.log("You incorrectly detected the fish");
-                  strikes++;
-                }
-              }
-            }
-            c++;
-            index++;
+      var fail_block = {
+        timeline: fail_procedure,
+        conditional_function: function() {
+          console.log("Error response: " + error_response);
+          if (error_response == true) {
+            return true;
           }
-        };
+          else {
+            return false;
+          }
+        }
+      };
 
-        var test_procedure = {
-          timeline: [test_block],
-          randomize_order: false,
-          repetitions: tests,
-          on_load: function () {
-            if (strikes >= max_strikes) {
-              console.log("Aborting test loop");
-              jsPsych.finishTrial();
+      var master_block = {
+        timeline: [test_procedure, fail_block],
+        repetitions: tests
+      };
+
+      var debrief_block = {
+        type: "html-keyboard-response",
+        stimulus: "<p>Thank you for your time. Experiment complete</p>",
+        on_load: function() {
+          //Send results, and shut websocket once they're all sent
+          /*if (strikes < max_strikes) {
+            printAllResults();
+            if (sendResults() == 0) {
+              console.log("Closing websocket");
+              ws.close();
             }
           }
-        };
-        timeline.push(test_procedure);
+          else {
+            console.log("Data NOT sent - strike limit reached");
+          }*/
+        },
+        on_finish: function() {
+          jsPsych.endExperiment();
+        }
+      };
 
-        var debrief_block = {
-          type: "html-keyboard-response",
-          stimulus: "<p>Thank you for your time. Experiment complete</p>",
-          on_load: function() {
-            //Send results, and shut websocket once they're all sent
-            if (strikes < max_strikes) {
-              printAllResults();
-              if (sendResults() == 0) {
-                console.log("Closing websocket");
-                ws.close();
-              }
-            }
-            else {
-              console.log("Data NOT sent - strike limit reached");
-            }
-          },
-          on_finish: function() {
-            jsPsych.endExperiment();
-          }
-        };
-        timeline.push(debrief_block);
+      timeline.push(welcome_block);
+      timeline.push(instructions_block);
+      timeline.push(master_block);
+      timeline.push(debrief_block);
 
-        jsPsych.init({
-            timeline: timeline,
-        });
-      }
+      jsPsych.init({
+          timeline: timeline,
+      });
+    }
+
   </script>
 </head>
 <body>

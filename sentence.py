@@ -94,7 +94,7 @@ class Sentencer:
             verb = self.verbs[self.__randomWord(self.verbs)]
             adj  = self.adjs[self.__randomWord(self.adjs)]
 
-            if (noun1 != noun2) and self.__countSyllable(verb) and self.__countSyllable(adj):
+            if (noun1 != noun2):
                 break
         result = [noun1, verb, adj, noun2]
         return result
@@ -117,4 +117,5 @@ class Sentencer:
         if result == 0.9:
             return True
         else:
+            print "Word rejected - " + str(word)
             return False

@@ -9,9 +9,7 @@ pours
 writes
 turns
 allows
-tickles
 cooks
-washes
 burns
 likes
 brings
@@ -26,3 +24,5 @@ blames
 plots
 grows
 sweeps
+burns
+plays

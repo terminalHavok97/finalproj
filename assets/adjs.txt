@@ -30,5 +30,10 @@ quick
 red
 blue
 black
+green
+white
+brown
 dead
 rich
+bright
+dim
