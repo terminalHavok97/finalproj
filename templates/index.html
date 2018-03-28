@@ -148,7 +148,7 @@
 
         var test_block = {
           type: "html-keyboard-response",
-          trial_duration: 5000,
+          trial_duration: 10000,
           response_ends_trial: true,
           choices: [65, 68, 70],
           data: jsPsych.timelineVariable('data'),
@@ -165,7 +165,7 @@
 
             function isFish(index) {
               for (var i=0; i<fish.length; i++) {
-                console.log("Fish at: " + fish[i]);
+                //console.log("Fish at: " + fish[i]);
                 if (fish[i] == index) {
                   return true;
                 }

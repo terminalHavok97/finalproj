@@ -410,7 +410,7 @@ class Ranker:
         pairs = []
         #If there have been at least t_index * 10 comparisons
         #   pick the two least played sentences
-        if (self.plays >= self.t_index * 10):
+        if (self.plays <= self.t_index * 10):
             print "Simple pair picking"
             for i in range(0, n):
                 pairs.append(self.__find2LeastPlayed())
