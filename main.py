@@ -130,13 +130,15 @@ if __name__ == '__main__':
     #ranker.addAllToTable(sen)
     ranker.importTable("test/table0.txt")
     ranker.printAll()
-    pairs = ranker.pickPairs(20)
+    pairs = ranker.pickPairs(100)
+    print "Pairs:"
+    print pairs
     #ranker.exportAsGraph()
 
     index = 0
-    for p in pairs:
+    '''for p in pairs:
         print p[0], (' '.join(ranker.getData(p[0])))
-        print p[1], (' '.join(ranker.getData(p[1])))
+        print p[1], (' '.join(ranker.getData(p[1])))'''
 
 
     print "Starting server..."

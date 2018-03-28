@@ -277,6 +277,9 @@ class Ranker:
             print ""
         return pairs
 
+    #Find n pairs where there is a 0.5 chance of either sentence being above the 1st STDEV
+    #   and the pairs are then choosen randomly from their respective partitions, while
+    #   pairs aren't duplicated in the list
     def __findNRandomRanked(self, n):
         ranks = self.getAllRank()
         ranks = np.sort(ranks)
@@ -284,31 +287,105 @@ class Ranker:
         pairs = []
         high = []
         low = []
+        high_limit = 0
+        low_limit = 0
+
+        if (np.math.factorial(self.t_index) <= n):
+            raise Exception("Error - Requested number of pairs over table factorial limit")
 
         def addToList(pickList1, pickList2, choosenList):
-            #Choose random
+            #Choose random sentence from list1 and list2, checking it isn't already in choosenList
+            count = 0
+            while True:
+                l1 = random.choice(pickList1)
+                l2 = random.choice(pickList2)
+
+                check = True
+
+                if (len(choosenList) > 0):
+                    for i in range(0, len(choosenList)):
+                        if (((l1 == choosenList[i][0]) and (l2 == choosenList[i][1])) or ((l2 == choosenList[i][0]) and (l1 == choosenList[i][1]))):
+                            print "Already exists"
+                            print l1, l2
+                            print choosenList[i][0], choosenList[i][1]
+                            print ""
+                            check = False
+                            break
+
+                    if (l1 != l2 and check == True):
+                        check = False
+                        break
+
+                    if (count >= 100):
+                        raise Exception("Error - Failed to break out of while loop while finding N random ranked")
+                    count += 1
+                else:
+                    if (l1 != l2):
+                        break
+
+            print [l1, l2]
+            return [l1, l2]
 
 
         for i in range(0, self.t_index):
-            if (i[2] >= threshhold):
+            if (self.table[i][2] >= threshhold):
                 high.append(self.table[i][0])
             else:
                 low.append(self.table[i][0])
 
         for i in range(0, n):
-            r = random.randint(0, 4)
+            r = random.randint(0, 3)
             if (r == 0):
                 #2 lows
-                pairs.append(addToList(low, low, pairs))
+                print "low low"
+                low_limit += 1
+                if ((low_limit + 1) >= len(low)):
+                    print "Part combined"
+                    pairs.append(addToList((high + low), low, pairs))
+                else:
+                    if ((high_limit + low_limit + 1) >= len(pairs)):
+                        print "Fully combined"
+                        pairs.append(addToList((high + low), (high + low), pairs))
+                    else:
+                        print "Unique"
+                        pairs.append(addToList(low, low, pairs))
             elif (r == 1):
                 # l1 low, l2 high
-                pairs.append(addToList(low, high, pairs))
+                print "low high"
+                low_limit += 1
+                high_limit += 1
+                if ((high_limit + low_limit + 1) >= len(pairs)):
+                    print "Fully combined"
+                    pairs.append(addToList((high + low), (high + low), pairs))
+                else:
+                    print "Unique"
+                    pairs.append(addToList(low, high, pairs))
             elif (r == 2):
                 # l1 high, l2 low
-                pairs.append(addToList(high, low, pairs))
+                print "high low"
+                low_limit += 1
+                high_limit += 1
+                if ((high_limit + low_limit + 1) >= len(pairs)):
+                    print "Fully combined"
+                    pairs.append(addToList((high + low), (high + low), pairs))
+                else:
+                    print "Unique"
+                    pairs.append(addToList(high, low, pairs))
             elif (r == 3):
                 # 2 highs
-                pairs.append(addToList(high, high, pairs))
+                print "high high " + str(high_limit)
+                high_limit += 1
+
+                if ((high_limit + 1) >= len(high)):
+                    print "Part combined"
+                    pairs.append(addToList(high, (high + low), pairs))
+                else:
+                    if ((high_limit + low_limit + 1) >= len(pairs)):
+                        print "Fully combined"
+                        pairs.append(addToList((high + low), (high + low), pairs))
+                    else:
+                        print "Unique"
+                        pairs.append(addToList(high, high, pairs))
             else:
                 raise Exception("Dice incorrecltly configured")
 
