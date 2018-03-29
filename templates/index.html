@@ -84,14 +84,6 @@
         index = 0;
         runExp();
       }
-    };
-    //TODO Unsure if we need this semicolon
-
-    //Pick a new index contained within test_pairs
-    function getNewIndex() {
-      var l = test_pairs.length;
-      var index = Math.floor(Math.random() * l);
-      return index;
     }
 
     //Send results back to server via websocket
@@ -110,7 +102,7 @@
       var welcome_block = {
           type: "html-keyboard-response",
           stimulus: "<h1>Welcome to the experiment. Press any key to continue</h1>"
-      };
+      }
 
       var instructions_block = {
         type: "html-keyboard-response",
@@ -126,7 +118,7 @@
               "<p>You will only have 5 seconds to answer</p>" +
               "<p>Press any key to being<p>",
         post_trial_gap: 2000
-      };
+      }
 
       var test_procedure = {
         type: "html-keyboard-response",
@@ -187,7 +179,7 @@
           }
           index++;
         }
-      };
+      }
 
       var fail_procedure = {
         type: 'html-keyboard-response',
@@ -209,33 +201,42 @@
             return 3000;
           }
         }
-      };
+      }
+
+      var sub_block = {
+        timeline: [test_procedure, fail_procedure],
+        loop_function: function(data) {
+          var last_trial_correct = jsPsych.data.get().last(2).values()[0].correct;
+          if (last_trial_correct) {
+            return false;
+          }
+          else {
+            console.log("Repeating trials");
+            return true;
+          }
+        }
+      }
 
       var master_block = {
-        timeline: [test_procedure, fail_procedure],
+        timeline: [sub_block],
         repetitions: tests
-      };
+      }
 
       var debrief_block = {
         type: "html-keyboard-response",
         stimulus: "<p>Thank you for your time. Experiment complete</p>",
-        on_load: function() {
+        choices: jsPsych.NO_KEYS,
+        on_start: function() {
           //Send results, and shut websocket once they're all sent
-          /*if (strikes < max_strikes) {
-            printAllResults();
-            if (sendResults() == 0) {
-              console.log("Closing websocket");
-              ws.close();
-            }
+          if (sendResults() == 0) {
+            console.log("Closing websocket");
+            ws.close();
           }
-          else {
-            console.log("Data NOT sent - strike limit reached");
-          }*/
         },
         on_finish: function() {
           jsPsych.endExperiment();
         }
-      };
+      }
 
       timeline.push(welcome_block);
       timeline.push(instructions_block);
