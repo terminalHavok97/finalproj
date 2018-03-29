@@ -46,7 +46,7 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
         print "Websocket connected"
 
         #Get n pairs
-        self.pairs = ranker.pickPairs(10)
+        self.pairs = ranker.pickPairs(100)
         fish_length = int(len(self.pairs) * 0.1)
         fish = sGen.fishify(fish_length)
         self.pairs.extend(fish)
@@ -126,7 +126,7 @@ if __name__ == '__main__':
     sGen = Sentencer()
     ranker = Ranker()
 
-    sen = sGen.getNSentences(20)
+    sen = sGen.getNSentences(10)
     ranker.addAllToTable(sen)
     #ranker.importTable("test/table0.txt")
     ranker.printAll()
