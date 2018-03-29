@@ -20,18 +20,23 @@ class Ranker:
     #t[5] = Bin
 
     #Initialise table
-    def __init__(self):
+    def __init__(self, percent=10):
         self.table = []
         self.t_index = 0
         self.fname = 'output/table'
         self.w_index = 0
         self.plays = 0
+        self.treshhold = 0
+        self.chop_size = 0
+        self.percent = percent
 
     #Add sentence to table
     def addToTable(self, data):
         l = [self.t_index, data, 1000.0, 0, 0, -1]
         self.table.append(l)
         self.t_index += 1
+        self.threshhold = len(self.table) * self.percent
+        self.chop_size = round(len(self.table) / self.percent)
 
     #Add n sentences to table
     def addAllToTable(self, array):
@@ -39,7 +44,7 @@ class Ranker:
             self.addToTable(array[i])
 
     #Remove sentence with ID from table
-    def removeFromTable(self, ID):
+    def removeFromTable(self, ID, prune=False):
         if ID > self.t_index or ID < 0:
             raise Exception("Error - ID out of bounds")
         else:
@@ -48,6 +53,11 @@ class Ranker:
             for i in self.table:
                 if i[0] > ID:
                     i[0] -= 1
+        #Don't update threshhold and chop_size if we're not pruning to maintain an
+        #   adjustable max-size of the table, so it chops down easily
+        if not prune:
+            self.threshhold = len(self.table) * self.percent
+            self.chop_size = round(len(self.table) / self.percent)
 
     #Print everything in the table
     def printAll(self):
@@ -61,7 +71,7 @@ class Ranker:
         print "======================"
         print "Total elems in table = ", self.t_index
         print "Total plays of elems = ", self.plays
-        print "Selection threshhold = ", (self.t_index * 10)
+        print "Selection threshhold = ", self.threshhold
         print "======================\n"
 
     #Search table for data matching param data and return its id
@@ -133,7 +143,10 @@ class Ranker:
         self.table[ID1][2] = rank1
         self.table[ID2][2] = rank2
 
+        #Check if threshhold * 2 (or more) reached, if so, prune
         self.plays += 1
+        if (self.plays > self.threshhold and self.plays % self.threshhold == 0):
+            self.__prune()
 
     #Update n comparisons into the table where each elem is an array with two elements.
     #In 2nd array, 0th index is ID of victor, 1st index is ID of loser
@@ -152,17 +165,23 @@ class Ranker:
         result = sorted(l, key=lambda x: x[1])
         return result
 
-    def updateInterestScores(self):
+    #Updates the interest score of the table
+    #Interest score calculated based off sum of neighbours plus sum of (neighbours + 1) / 2
+    def __updateInterestScores(self):
         ranks = self.__returnSortedRanks()
 
         for i in range(0, len(ranks)):
             if (i == 0):
                 self.table[i][4] = abs(ranks[i][1] - ranks[i+1][1]) * 2.0
+                self.table[i][4] = abs(ranks[i][1] - ranks[i+2][1])
             elif(i == (len(ranks) - 1)):
                 self.table[i][4] = abs(ranks[i][1] - ranks[i-1][1]) * 2.0
+                self.table[i][4] = abs(ranks[i][1] - ranks[i-2][1])
             else:
+                self.table[i][4] += abs(ranks[i][1] - ranks[i+2][1]) * 0.5
                 self.table[i][4] += abs(ranks[i][1] - ranks[i+1][1])
                 self.table[i][4] += abs(ranks[i][1] - ranks[i-1][1])
+                self.table[i][4] += abs(ranks[i][1] - ranks[i-2][1]) * 0.5
 
     #Returns two distinct random sentences
     def __find2Random(self):
@@ -316,7 +335,7 @@ class Ranker:
                         check = False
                         break
 
-                    if (count >= 100):
+                    if (count >= 1000):
                         raise Exception("Error - Failed to break out of while loop while finding N random ranked")
                     count += 1
                 else:
@@ -410,7 +429,7 @@ class Ranker:
         pairs = []
         #If there have been at least t_index * 10 comparisons
         #   pick the two least played sentences
-        if (self.plays <= self.t_index * 10):
+        if (self.plays <= self.threshold):
             print "Simple pair picking"
             for i in range(0, n):
                 pairs.append(self.__find2LeastPlayed())
@@ -429,10 +448,29 @@ class Ranker:
 
         return pairs
 
-    def prune(self):
-        #After n plays, each sentence will be able to be pruned if in the
-        # bottom n % of the table -- That'll probs be 2nd STDEV
-        print "PRUNE"
+    def __prune(self):
+        ranks = self.getAllRank()
+        ranks = np.sort(ranks)
+        stdev = np.mean(ranks) + np.std(ranks)
+
+        print "Begining prune"
+
+        #1. Update interest scores
+        self.__updateInterestScores()
+
+        #2. Remove the self.chop_size most clustered rows with a bias away from
+        #   above the 1st stdev
+        for i in range(0, self.chop_size):
+            highest = [-1, float("-inf")]
+            for j in range(0, self.t_index):
+                if (self.table[j][2] > highest[0]):
+                    highest[0] = self.table[j][2]
+                    highest[1] = j
+            print "Removing id=" + str(highest[1]) + " rank=" + str(highest[0])
+            self.removeFromTable(highest[1], True)
+
+
+
 
     #Returns a list containing the highest rank in the table and the lowest
     def __getHighestAndLowestRank(self):
