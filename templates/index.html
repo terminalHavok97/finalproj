@@ -34,7 +34,6 @@
     var counter = -1; //Websocket input counter
     var s = []; //Websocket input temp list
     var index = 0; //Which test in test_pairs is next to be run?
-    var error_response = false; //Was the last trial response incorrect?
 
     ws = new WebSocket("ws://localhost:5000/websocket");
 
@@ -140,7 +139,7 @@
             "</h2><h2>" + test_pairs[index][3] + "</h2>";
         },
         prompt: "<p>Which sounds more normal?</p><p>Press a for choice 1, Press d for choice 2</p>",
-        data: jsPsych.timelineVariable('data'),
+        //data: jsPsych.timelineVariable('data'),
         on_finish: function(data) {
           function isFish(index) {
             for (var i=0; i<fish.length; i++) {
@@ -153,34 +152,36 @@
 
           var key = data.key_press;
           var isFish = isFish(index);
-          error_response = false;
 
           if (key != 70 && key != 68 && key != 65) {
             console.log("NULL detected");
-            error_response = true;
+            data.correct = false;
           }
           else {
             if (isFish == true) {
               if (key == 70) {
                 console.log("Fish detected");
+                data.correct = true;
               }
               else {
                 console.log("You failed to detect the fish!");
-                error_response = true;
+                data.correct = false;
               }
             }
             else {
               if (key == 65) {
                 results.push(test_pairs[index][0]);
                 results.push(test_pairs[index][2]);
+                data.correct = true;
               }
               else if (key == 68) {
                 results.push(test_pairs[index][2]);
                 results.push(test_pairs[index][0]);
+                data.correct = true;
               }
               else if (key == 70) {
                 console.log("You incorrectly detected the fish");
-                error_response = true;
+                data.correct = false;
               }
             }
           }
@@ -189,26 +190,29 @@
       };
 
       var fail_procedure = {
-        type: "html-keyboard-response",
-        trial_duration: 3000,
-        stimulus: "<h1>INCORRECT RESPONSE, PLEASE TRY AGAIN</h1>"
-      };
-
-      var fail_block = {
-        timeline: fail_procedure,
-        conditional_function: function() {
-          console.log("Error response: " + error_response);
-          if (error_response == true) {
-            return true;
+        type: 'html-keyboard-response',
+        stimulus: function(){
+          var last_trial_correct = jsPsych.data.get().last(1).values()[0].correct;
+          if(last_trial_correct){
+            return ""
+          } else {
+            index--;
+            return "<h1>INCORRECT RESPONSE, PLEASE TRY AGAIN</h1>"
+          }
+        },
+        trial_duration: function() {
+          var last_trial_correct = jsPsych.data.get().last(1).values()[0].correct;
+          if (last_trial_correct) {
+            return 0;
           }
           else {
-            return false;
+            return 3000;
           }
         }
       };
 
       var master_block = {
-        timeline: [test_procedure, fail_block],
+        timeline: [test_procedure, fail_procedure],
         repetitions: tests
       };
 
