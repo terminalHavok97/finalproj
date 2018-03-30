@@ -426,7 +426,7 @@ class Ranker:
         #0. Populate sublist of high-scoring rows
         for i in range(0, self.t_index):
             if (self.table[i][2] <= stdev):
-                lows.append([i, self.table[i][2])
+                lows.append([i, self.table[i][2]])
 
         print "Begining prune"
 
@@ -500,17 +500,16 @@ class Ranker:
         self.percent = int(f.readline().strip())
 
         while True:
-            line = f.readline()
+            line = f.readline().strip()
             if not line: break
-            print count, line.strip()
+            print count, line
+            
             if (count == 1):
-                s.append(str(line.strip()).split())
-            elif (count == 2):
-                s.append(float(line.strip()))
+                s.append(str(line))
+            elif (count == 2 or count == 4):
+                s.append(float(line))
             else:
-                l = line.strip()
-                if (l != ""):
-                    s.append(int(l))
+                s.append(int(line))
 
             if (count == 5):
                 self.table.append(s)
@@ -535,7 +534,7 @@ class Ranker:
     def exportData(self):
         f = open((str(self.fname) + str(self.w_index) + ".txt"), 'w')
         self.w_index += 1
-        f.write(str(self.percent) + "\n\n")
+        f.write(str(self.percent) + "\n")
         for i in range(0, len(self.table)):
             for j in range(0, 5):
                 if (j == 1):
