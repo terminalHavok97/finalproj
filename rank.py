@@ -419,6 +419,14 @@ class Ranker:
         ranks = self.getAllRank()
         ranks = np.sort(ranks)
         stdev = np.mean(ranks) + np.std(ranks)
+        lows = []
+
+        #In all arrays here -> [id, rank]
+
+        #0. Populate sublist of high-scoring rows
+        for i in range(0, self.t_index):
+            if (self.table[i][2] <= stdev):
+                lows.append([i, self.table[i][2])
 
         print "Begining prune"
 
@@ -426,15 +434,27 @@ class Ranker:
         self.__updateInterestScores()
 
         #2. Remove the self.chop_size most clustered rows with a bias away from
-        #   above the 1st stdev
+        #   above the 1st stdev (Bias is 1/2 chance to exclude > 1st stdev)
+
         for i in range(0, self.chop_size):
-            highest = [-1, float("-inf")]
-            for j in range(0, self.t_index):
-                if (self.table[j][2] > highest[0]):
-                    highest[0] = self.table[j][2]
-                    highest[1] = j
-            print "Removing id=" + str(highest[1]) + " rank=" + str(highest[0])
-            self.removeFromTable(highest[1], True)
+            r = random.randint(0, 1)
+            if (r == 0): #Take lowest cluster score in entire table
+                highest = [-1, float("-inf")]
+                for j in range(0, self.t_index):
+                    if (self.table[j][2] > highest[1]):
+                        highest[1] = self.table[j][2]
+                        highest[0] = j
+                print "Removing id=" + str(highest[0]) + " rank=" + str(highest[1]) + " A"
+                self.removeFromTable(highest[0], True)
+
+            else: #Take lowest cluster score in all of table lower than 1st stdev
+                highest = [-1, float("-inf")]
+                for j in range(0, len(lows)):
+                    if (lows[1] > highest[1]):
+                        highest[1] = lows[1]
+                        highest[0] = j
+                print "Removing id=" + str(highest[0]) + " rank=" + str(highest[1]) + " L"
+                self.removeFromTable(highest[0], True)
 
 
     #Returns a list containing the highest rank in the table and the lowest
