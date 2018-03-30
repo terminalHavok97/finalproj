@@ -124,16 +124,11 @@ if __name__ == '__main__':
 
     #Generate sentences and init table
     sGen = Sentencer()
-    ranker = Ranker()
+    ranker = Ranker(10)
 
-    sen = sGen.getNSentences(10)
-    ranker.addAllToTable(sen)
-    #ranker.importTable("test/table0.txt")
+    #ranker.addAllToTable(sGen.getNSentences(10))
+    ranker.importTable("output/table1.txt")
     ranker.printAll()
-    #pairs = ranker.pickPairs(100)
-    #print "Pairs:"
-    #print pairs
-    #ranker.exportAsGraph()
 
     #index = 0
     '''for p in pairs:

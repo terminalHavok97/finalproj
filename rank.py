@@ -17,7 +17,6 @@ class Ranker:
     #t[2] = Rank
     #t[3] = Number of comparisons
     #t[4] = Interest score
-    #t[5] = Bin
 
     #Initialise table
     def __init__(self, percent=10):
@@ -32,11 +31,11 @@ class Ranker:
 
     #Add sentence to table
     def addToTable(self, data):
-        l = [self.t_index, data, 1000.0, 0, 0, -1]
+        l = [self.t_index, data, 1000.0, 0, 0]
         self.table.append(l)
         self.t_index += 1
         self.threshhold = len(self.table) * self.percent
-        self.chop_size = round(len(self.table) / self.percent)
+        self.chop_size = int(round(len(self.table) / self.percent))
 
     #Add n sentences to table
     def addAllToTable(self, array):
@@ -57,7 +56,7 @@ class Ranker:
         #   adjustable max-size of the table, so it chops down easily
         if not prune:
             self.threshhold = len(self.table) * self.percent
-            self.chop_size = round(len(self.table) / self.percent)
+            self.chop_size = int(round(len(self.table) / self.percent))
 
     #Print everything in the table
     def printAll(self):
@@ -65,7 +64,7 @@ class Ranker:
         print "ID == Data == Rank == Comparisons == Interest == Bin"
         print ""
         for i in self.table:
-            print i[0], i[1], i[2], i[3], i[4], i[5]
+            print i[0], i[1], i[2], i[3], i[4]
 
         print ""
         print "======================"
@@ -174,9 +173,17 @@ class Ranker:
             if (i == 0):
                 self.table[i][4] = abs(ranks[i][1] - ranks[i+1][1]) * 2.0
                 self.table[i][4] = abs(ranks[i][1] - ranks[i+2][1])
+            elif(i == 1):
+                self.table[i][4] += abs(ranks[i][1] - ranks[i+2][1])
+                self.table[i][4] += abs(ranks[i][1] - ranks[i+1][1])
+                self.table[i][4] += abs(ranks[i][1] - ranks[i-1][1])
             elif(i == (len(ranks) - 1)):
                 self.table[i][4] = abs(ranks[i][1] - ranks[i-1][1]) * 2.0
                 self.table[i][4] = abs(ranks[i][1] - ranks[i-2][1])
+            elif(i == len(ranks) - 2):
+                self.table[i][4] += abs(ranks[i][1] - ranks[i+1][1])
+                self.table[i][4] += abs(ranks[i][1] - ranks[i-1][1])
+                self.table[i][4] += abs(ranks[i][1] - ranks[i-2][1])
             else:
                 self.table[i][4] += abs(ranks[i][1] - ranks[i+2][1]) * 0.5
                 self.table[i][4] += abs(ranks[i][1] - ranks[i+1][1])
@@ -306,11 +313,6 @@ class Ranker:
         pairs = []
         high = []
         low = []
-        high_limit = 0
-        low_limit = 0
-
-        if (np.math.factorial(self.t_index) <= n):
-            raise Exception("Error - Requested number of pairs over table factorial limit")
 
         def addToList(pickList1, pickList2, choosenList):
             #Choose random sentence from list1 and list2, checking it isn't already in choosenList
@@ -322,14 +324,14 @@ class Ranker:
                 check = True
 
                 if (len(choosenList) > 0):
-                    for i in range(0, len(choosenList)):
+                    '''for i in range(0, len(choosenList)):
                         if (((l1 == choosenList[i][0]) and (l2 == choosenList[i][1])) or ((l2 == choosenList[i][0]) and (l1 == choosenList[i][1]))):
                             print "Already exists"
                             print l1, l2
                             print choosenList[i][0], choosenList[i][1]
                             print ""
                             check = False
-                            break
+                            break'''
 
                     if (l1 != l2 and check == True):
                         check = False
@@ -357,54 +359,19 @@ class Ranker:
             if (r == 0):
                 #2 lows
                 print "low low"
-                low_limit += 1
-                if ((low_limit + 1) >= len(low)):
-                    print "Part combined"
-                    pairs.append(addToList((high + low), low, pairs))
-                else:
-                    if ((high_limit + low_limit + 1) >= len(pairs)):
-                        print "Fully combined"
-                        pairs.append(addToList((high + low), (high + low), pairs))
-                    else:
-                        print "Unique"
-                        pairs.append(addToList(low, low, pairs))
+                pairs.append(addToList(low, low, pairs))
             elif (r == 1):
                 # l1 low, l2 high
                 print "low high"
-                low_limit += 1
-                high_limit += 1
-                if ((high_limit + low_limit + 1) >= len(pairs)):
-                    print "Fully combined"
-                    pairs.append(addToList((high + low), (high + low), pairs))
-                else:
-                    print "Unique"
-                    pairs.append(addToList(low, high, pairs))
+                pairs.append(addToList(low, high, pairs))
             elif (r == 2):
                 # l1 high, l2 low
                 print "high low"
-                low_limit += 1
-                high_limit += 1
-                if ((high_limit + low_limit + 1) >= len(pairs)):
-                    print "Fully combined"
-                    pairs.append(addToList((high + low), (high + low), pairs))
-                else:
-                    print "Unique"
-                    pairs.append(addToList(high, low, pairs))
+                pairs.append(addToList(high, low, pairs))
             elif (r == 3):
                 # 2 highs
-                print "high high " + str(high_limit)
-                high_limit += 1
-
-                if ((high_limit + 1) >= len(high)):
-                    print "Part combined"
-                    pairs.append(addToList(high, (high + low), pairs))
-                else:
-                    if ((high_limit + low_limit + 1) >= len(pairs)):
-                        print "Fully combined"
-                        pairs.append(addToList((high + low), (high + low), pairs))
-                    else:
-                        print "Unique"
-                        pairs.append(addToList(high, high, pairs))
+                print "high high"
+                pairs.append(addToList(high, high, pairs))
             else:
                 raise Exception("Dice incorrecltly configured")
 
@@ -429,7 +396,7 @@ class Ranker:
         pairs = []
         #If there have been at least t_index * 10 comparisons
         #   pick the two least played sentences
-        if (self.plays <= self.threshhold):
+        if (self.plays < self.threshhold):
             print "Simple pair picking"
             for i in range(0, n):
                 pairs.append(self.__find2LeastPlayed())
@@ -468,8 +435,6 @@ class Ranker:
                     highest[1] = j
             print "Removing id=" + str(highest[1]) + " rank=" + str(highest[0])
             self.removeFromTable(highest[1], True)
-
-
 
 
     #Returns a list containing the highest rank in the table and the lowest
@@ -511,9 +476,13 @@ class Ranker:
         s = []
         count = 0
         f = open(path, 'r')
+
+        self.percent = int(f.readline().strip())
+
         while True:
             line = f.readline()
             if not line: break
+            print count, line.strip()
             if (count == 1):
                 s.append(str(line.strip()).split())
             elif (count == 2):
@@ -523,7 +492,7 @@ class Ranker:
                 if (l != ""):
                     s.append(int(l))
 
-            if (count == 6):
+            if (count == 5):
                 self.table.append(s)
                 self.t_index += 1
                 count = 0
@@ -531,8 +500,14 @@ class Ranker:
             else:
                 count += 1
 
+        self.threshhold = self.percent * len(self.table)
+        self.chop_size = int(round(len(self.table) / self.percent))
+
         for i in self.table:
             self.plays += i[3]
+
+        if (self.plays > self.threshhold and self.plays % self.threshhold == 0):
+            self.__prune()
 
         f.close()
 
@@ -540,11 +515,13 @@ class Ranker:
     def exportData(self):
         f = open((str(self.fname) + str(self.w_index) + ".txt"), 'w')
         self.w_index += 1
+        f.write(str(self.percent) + "\n\n")
         for i in range(0, len(self.table)):
             for j in range(0, 5):
                 if (j == 1):
                     for k in range(0, 4):
                         f.write(str(self.table[i][j][k] + ' '))
+                    f.write('\n')
                 else:
                     f.write(str(self.table[i][j]) + '\n')
             f.write('\n')
