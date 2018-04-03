@@ -494,41 +494,43 @@ class Ranker:
     #Load a table that was previously saved into our current one
     def importTable(self, path):
         s = []
-        count = 0
-        f = open(path, 'r')
+        count = -1
+        #f = open(path, 'r')
 
-        self.percent = int(f.readline().strip())
+        with open(path, 'rb') as f:
+            for line in f:
+                l = line.strip()
+                if (l == ""):
+                    print "BLANK"
+                else:
+                    print l
+                    if (count == -1):
+                        self.percent = int(l)
+                    elif (count == 0 or count == 3):
+                        s.append(int(l))
+                    elif (count == 2 or count == 4):
+                        s.append(float(l))
+                    elif (count == 1):
+                        s.append(str(l))
 
-        while True:
-            line = f.readline().strip()
-            if not line: break
-            print count, line
-            
-            if (count == 1):
-                s.append(str(line))
-            elif (count == 2 or count == 4):
-                s.append(float(line))
-            else:
-                s.append(int(line))
+                    if (count == 4):
+                        count = 0
+                        self.table.append(s)
+                        self.t_index += 1
+                        s = []
+                    else:
+                        count += 1
+            print "EOF\n"
+            self.threshhold = self.percent * len(self.table)
+            self.chop_size = int(round(len(self.table) / self.percent))
 
-            if (count == 5):
-                self.table.append(s)
-                self.t_index += 1
-                count = 0
-                s = []
-            else:
-                count += 1
+            for i in self.table:
+                self.plays += i[3]
 
-        self.threshhold = self.percent * len(self.table)
-        self.chop_size = int(round(len(self.table) / self.percent))
+            if (self.plays > self.threshhold and self.plays % self.threshhold == 0):
+                self.__prune()
 
-        for i in self.table:
-            self.plays += i[3]
-
-        if (self.plays > self.threshhold and self.plays % self.threshhold == 0):
-            self.__prune()
-
-        f.close()
+            f.close()
 
     #Export a copy of the table after dividing data into seperate bins for analysis
     def exportData(self):
