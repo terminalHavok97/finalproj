@@ -126,8 +126,8 @@ if __name__ == '__main__':
     sGen = Sentencer()
     ranker = Ranker(10)
 
-    #ranker.addAllToTable(sGen.getNSentences(10))
-    ranker.importTable("output/table1.txt")
+    ranker.addAllToTable(sGen.getNSentences(100))
+    #ranker.importTable("output/table1.txt")
     ranker.printAll()
 
     #index = 0
