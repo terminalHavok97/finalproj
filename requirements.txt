@@ -1,2 +1,4 @@
+matplotlib==2.0.0
 tornado==4.5.2
+numpy==1.12.1
 textstat==0.3.1
