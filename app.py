@@ -139,7 +139,7 @@ if __name__ == '__main__':
     print "Starting server..."
     ws_app = Application()
     server = tornado.httpserver.HTTPServer(ws_app)
-    server.listen(8000)
-    print "Listening on port 8000"
+    server.listen(8080)
+    print "Listening on port 8080"
     print ""
     tornado.ioloop.IOLoop.instance().start()
