@@ -30,6 +30,7 @@ try:
     import tornado.websocket
     import tornado.httpserver
     import tornado.ioloop
+    import tornado.options
     from random import shuffle
     from rank import Ranker
     from sentence import Sentencer
@@ -62,26 +63,26 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
 
         self.write_message(str(l))
 
-        index = 0
+        #index = 0
         for p in self.pairs:
             if p[0] == -1: #Fish case
                 self.write_message(str(p[0]))
                 self.write_message(' '.join(p[1]))
                 self.write_message(str(p[2]))
                 self.write_message(' '.join(p[3]))
-                print "[" + str(index) + "]: " + (' '.join(p[1])) + " ==> F"
-                print "[" + str(index) + "]: " + (' '.join(p[3])) + " ==> F"
-                print ""
-                index += 1
+                #print "[" + str(index) + "]: " + (' '.join(p[1])) + " ==> F"
+                #print "[" + str(index) + "]: " + (' '.join(p[3])) + " ==> F"
+                #print ""
+                #index += 1
             else:
                 self.write_message(str(p[0]))
                 self.write_message(' '.join(ranker.getData(p[0])))
                 self.write_message(str(p[1]))
                 self.write_message(' '.join(ranker.getData(p[1])))
-                print "[" + str(index) + "]: " + (' '.join(ranker.getData(p[0])))
-                print "[" + str(index) + "]: " + (' '.join(ranker.getData(p[1])))
-                print ""
-                index += 1
+                #print "[" + str(index) + "]: " + (' '.join(ranker.getData(p[0])))
+                #print "[" + str(index) + "]: " + (' '.join(ranker.getData(p[1])))
+                #print ""
+                #index += 1
         print "Test data sent\n"
 
     def on_message(self, msg):
@@ -122,6 +123,10 @@ class Application(tornado.web.Application):
 
 if __name__ == '__main__':
 
+    def get_bind_interface():
+        ipaddr = os.getenv("OPENSHIFT_PYTHON_IP") or os.getenv("OPENSHIFT_DIY_IP")
+        return(ipaddr if ipaddr else "127.0.0.1")
+
     #Generate sentences and init table
     sGen = Sentencer()
     ranker = Ranker(10)
@@ -137,9 +142,16 @@ if __name__ == '__main__':
 
 
     print "Starting server..."
+
+    #  Tornado server address and port number.
+    tornado.options.define("address", default=get_bind_interface(), help="network address/interface to bind to")
+    tornado.options.define("port", default=8080, help="port number to bind to", type=int)
+    tornado.options.parse_command_line()
+    options = tornado.options.options
+
     ws_app = Application()
     server = tornado.httpserver.HTTPServer(ws_app)
-    server.listen(8080)
-    print "Listening on port 8080"
+    server.listen(options.port, options.address)
+    print "Listening on port " + str(options.port)
     print ""
     tornado.ioloop.IOLoop.instance().start()

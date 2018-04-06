@@ -35,7 +35,13 @@
     var s = []; //Websocket input temp list
     var index = 0; //Which test in test_pairs is next to be run?
 
-    ws = new WebSocket("ws://memhier-finalproj.193b.starter-ca-central-1.openshiftapps.com/:8080/websocket");
+    var host = window.document.location.host;
+    var port = window.document.location.port;
+
+    console.log("Host: " + host);
+    console.log("Port: " + port);
+
+    ws = new WebSocket("ws://" + host + "/websocket");
 
     ws.onmessage = function(e) {
       switch (counter) {
