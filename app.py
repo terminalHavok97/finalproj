@@ -154,13 +154,13 @@ if __name__ == '__main__':
 
     try:
         server.listen(options.port, options.address)
-    except socket.error as e:
+    except Exception as e:
         if e.errno == 98:
             print "[SOCKET] - Connection failed 0"
-            for i in range(0, 5):
+            for i in range(1, 5):
                 try:
                     server.listen(options.port, options,address)
-                except socket.error as e:
+                except Exception as e:
                     print "[SOCKET] - Connection failed " + str(i)
                     continue
 
