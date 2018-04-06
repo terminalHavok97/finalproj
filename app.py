@@ -151,7 +151,19 @@ if __name__ == '__main__':
 
     ws_app = Application()
     server = tornado.httpserver.HTTPServer(ws_app)
-    server.listen(options.port, options.address)
+
+    try:
+        server.listen(options.port, options.address)
+    except socket.error as e:
+        if e.errno == 98:
+            print "[SOCKET] - Connection failed 0"
+            for i in range(0, 5):
+                try:
+                    server.listen(options.port, options,address)
+                except socket.error as e:
+                    print "[SOCKET] - Connection failed " + str(i)
+                    continue
+
     print "Listening on port " + str(options.port)
     print ""
     tornado.ioloop.IOLoop.instance().start()
